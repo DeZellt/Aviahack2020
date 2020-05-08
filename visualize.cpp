@@ -2,60 +2,34 @@
 #include <string>
 #include <vector>
 #include <SFML/Graphics.hpp>
-
-namespace cc{
-    const std::string windowName;
-    const int windowWidth = 640;
-    const int windowHeight = 480;
-};
+#include "visualize.hpp"
 
 sf::Font font;
 
-typedef size_t timePoint;
+Plane::Plane(const std::string &newName, int newWidth, int newHeight){
+    name = newName;
+    width = newWidth;
+    height = newHeight;
+}
 
-class Plane{
-public:
-    Plane(){};
-    Plane(const std::string &newName, int newWidth, int newHeight){
-        name = newName;
-        width = newWidth;
-        height = newHeight;
-    }
-    Plane(std::string &&newName, int newWidth, int newHeight){
-        name = std::move(newName);
-        width = newWidth;
-        height = newHeight;
-    }
-    Plane(const Plane &p){
-        name = p.name;
-        width = p.width;
-        height = p.height;
-    }
-    std::string name;
-    int width, height;
-};
+Plane::Plane(const Plane &p){
+    name = p.name;
+    width = p.width;
+    height = p.height;
+}
 
-class Angar{
-public:
-    Angar(){};
-    Angar(const std::string &newName, int newWidth, int newHeight, const std::vector<Plane> &newPlanes){
-        name = newName;
-        width = newWidth;
-        height = newHeight;
-        planes = newPlanes;
-    }
-
-    std::string name;
-    int width, height;
-    std::vector<Plane> planes;
-};
+Angar::Angar(const std::string &newName, int newWidth, int newHeight, const std::vector<Plane> &newPlanes){
+    name = newName;
+    width = newWidth;
+    height = newHeight;
+    planes = newPlanes;
+}
 
 //окно для рендеринга, массив с днями
 void drawAngars(sf::RenderWindow &window, std::vector<std::vector<Angar>> &timeGrid, timePoint t){
     sf::RectangleShape angarRec;
     sf::RectangleShape planeRec;
 
-    
     sf::Text text;
     
     text.setString("Hello123456");
@@ -73,7 +47,7 @@ int main(){
     if(!font.loadFromFile("./Fonts/lucida.ttf")){
         throw int();
     }
-    
+
     std::vector<std::vector<Angar>> angarTimeGrid;
     timePoint t = 0;
 
