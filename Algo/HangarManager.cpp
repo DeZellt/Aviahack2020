@@ -84,8 +84,8 @@ std::map<std::pair<TOFormat, std::string>, std::unordered_map<std::string, int>>
 Plane ReadPlane(const Json::Node& node) {
     Plane result;
     result.name = node.AsMap().at("name").AsString();
-    result.width = node.AsMap().at("width").AsDouble();
-    result.height = node.AsMap().at("length").AsDouble();
+    result.width = (int32_t )(node.AsMap().at("width").AsDouble() * 1000);
+    result.height = (int32_t )(node.AsMap().at("length").AsDouble() * 1000);
     result.serviceTime = 0;
     return result;
 }
@@ -151,4 +151,57 @@ HangarManager::HangarManager() {
                 < *std::max_element(prices.at({rhs.toFormat, rhs.planeName}).begin(), prices.at({rhs.toFormat, rhs.planeName}).end());
     });
 
+}
+
+
+// ********************************
+// Реализация методов HangarManager
+// ********************************
+
+bool Hangar::planePutLvl(Level& lvl, const Plane& pln) {
+	if (lvl.canPutFloor(pln)) {
+		points.emplace(pln, lvl.putFloor(pln));
+		return true;
+	}
+	if (lvl.canPutCeil(pln)) {
+		points.emplace(pln, lvl.putCeil(pln));
+		return true;
+	}
+	return false;
+}
+
+bool Hangar::add(const Plane& plane) {
+	std::vector<Plane> updatePlanes = planes;
+	updatePlanes.push_back(plane);
+	std::vector<Level> levels;
+
+	std::sort(updatePlanes.begin(), updatePlanes.end(), [](const Plane& l, const Plane& r) { return l.height < r.height; });
+	for (auto& pln : updatePlanes) {
+		if ((levels.empty() ? 0 : levels.back().beginHeight) + pln.height > height) // Мы не можем добавить самолет заранее
+			return false;
+
+		bool plnPut = false;
+		for (auto& lvl : levels) {
+			if (Hangar::planePutLvl(lvl, pln)) {
+				plnPut = true;
+				break;
+			}
+		}
+
+		if (plnPut) continue;
+
+		levels.emplace_back(levels.empty() ? 0 : levels.back().beginHeight + levels.back().getHeight(), width);
+		if (levels.back().beginHeight + pln.height > height
+				|| !Hangar::planePutLvl(levels.back(), pln))
+			return false;
+	}
+	return true;
+}
+
+void Hangar::updatePlanes(int32_t timePoint) {
+	for (auto it = planes.begin(); it != planes.end(); ++it) {
+		--it->serviceTime;
+		if (it->serviceTime == 0)
+			planes.erase(it);
+	}
 }

@@ -1,0 +1,3 @@
+/Users/sindenis/CSinDenis/university/sem4/48percent/Algo/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/Users/sindenis/CSinDenis/university/sem4/48percent/Algo/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/sindenis/CSinDenis/university/sem4/48percent/Algo/cmake-build-debug/CMakeFiles/aviashit.dir

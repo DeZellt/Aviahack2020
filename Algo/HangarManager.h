@@ -9,6 +9,10 @@
 #include <algorithm>
 #include <iostream>
 #include <vector>
+#include <functional>
+#include <MacTypes.h>
+
+#include "Point.h"
 
 class Date {
 public:
@@ -30,8 +34,8 @@ private:
 class Plane {
 public:
     std::string name;
-    double width;
-    double height;
+    int32_t width;
+    int32_t height;
     int32_t serviceTime;
 };
 
@@ -65,18 +69,81 @@ public:
     int32_t interval_end;
 };
 
+struct Level {
+	int32_t beginHeight;
+	int32_t width;
+	std::vector<TPoint> floor;
+	std::vector<TPoint> ceiling;
+
+	Level() = default;
+
+	Level(int32_t beginHeight, int32_t width):
+		beginHeight(beginHeight),
+		width(width),
+		floor(0),
+		ceiling(0)
+	{}
+
+	// Методы для проверки постановки самолета на данный уровень
+
+	bool canPutFloor(const Plane& pln) {
+		if (floor.empty()) {
+			return true;
+		}
+		return floor.back().x + pln.width <= width;
+	}
+
+	bool canPutCeil(const Plane& pln) {
+		for (auto& point : floor) {
+			if (width - (ceiling.empty() ? 0 : ceiling.back().x) < point.x
+			&& getHeight() - (ceiling.empty() ? 0 : ceiling.back().y) < point.y) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	// Методы putFloor и putCeil возвращают левый нижний край прямоугольника(самолета)
+	// Для того, чтобы после добавления на уровень можно было добавить координаты самолета
+	// В общий pull
+	TPoint putFloor(const Plane& pln) {
+		TPoint res(floor.empty() ? 0 : floor.back().x, beginHeight);
+		floor.emplace_back((floor.empty() ? 0 : floor.back().x) + pln.width,
+				beginHeight + pln.height);
+		return res;
+	}
+
+	TPoint putCeil(const Plane& pln) {
+		TPoint res(width - (ceiling.empty() ? 0 : ceiling.back().x) - pln.width,
+				getHeight() - pln.height);
+		ceiling.emplace_back(pln.height, width - (ceiling.empty() ? 0 : ceiling.back().x));
+		return res;
+	}
+
+	int32_t getHeight() { return floor.empty() ? 0 : floor.front().y; }
+};
+
 class Hangar {
 public:
-    void add(Plane plane);
-    bool canAdd(Plane plane);
-    void clear(int32_t timePoint); // Удаляет из std::vector<Plane> самолеты у которых servicTime <= timePoint
+    bool add(const Plane& plane);
+    void updatePlanes(int32_t timePoint);
 private:
     std::string name;
     int32_t width;
     int32_t height;
     std::vector<Plane> planes;
-    //TODO: Написать алгоритм для проверки на добавление самолета и проверки
-    //сколько места осталось в ангаре вроде статья на хабре
+
+    class PlaneHashFunc {
+    	size_t operator()(const Plane& plane) const {
+    		return std::hash<std::string>()(plane.name) +
+    		        std::hash<int32_t >()(plane.height + plane.width);
+    	}
+    };
+
+    std::unordered_map<Plane, TPoint, PlaneHashFunc> points;
+
+    bool planePutLvl(Level&, const Plane&);
+
 };
 
 Company ReadCompany(const Json::Node&);
@@ -85,5 +152,4 @@ std::map<std::string, Company> ReadCompanies(const Json::Node&);
 class HangarManager {
 public:
     HangarManager();
-
 };
