@@ -155,7 +155,7 @@ HangarManager::HangarManager() {
 
 
 // ********************************
-// Реализация методов HangarManager
+// Реализация методов Hangar
 // ********************************
 
 bool Hangar::planePutLvl(Level& lvl, const Plane& pln) {
