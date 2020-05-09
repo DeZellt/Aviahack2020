@@ -262,53 +262,6 @@ bool ReadFifthSheet(const char* str, int start_point) {
 	return true;
 }
 
-/*
-bool ParsTable(const char* str) {
-	libxl::Book* book = xlCreateXMLBook();
-	if (!book->load(str)) {
-		std::cout << "Book is not loaded\n";
-		return false;
-	}
-	rapidjson::Document doc;
-	doc.SetObject();
-	std::cout << "Book is load\nBook contains " << book->sheetCount() << " sheets\n";
-	if (!ReadFirstSheet(book, doc)) {
-		std::cout << "First sheet error reading\n";
-		return false;
-	}
-	std::cout << "First Sheet loaded\n";
-
-	if (!ReadSecondSheet(book, doc)) {
-		std::cout << "Second sheet error reading\n";
-		return false;
-	}
-	std::cout << "Second sheet loaded\n";
-
-	if (!ReadThirdSheet(book, doc)) {
-		std::cout << "Third sheet error reading\n";
-		return false;
-	}
-	std::cout << "Third sheet loaded\n";
-
-	if (!ReadFourthSheet(book, doc)) {
-		std::cout << "Fourth sheet error reading\n";
-		return false;
-	}
-	std::cout << "Fourth sheet loaded\n";
-
-	if (!ReadFifthSheet(book, doc)) {
-		std::cout << "Fifth sheet error reading\n";
-		return false;
-	}
-	std::cout << "Fifth sheet readed\n";
-	std::cout << "Last Error: " << book->errorMessage() << std::endl;
-	std::ofstream out(OUTPUT_FILE_FIRST);
-	rapidjson::OStreamWrapper osw(out);
-	rapidjson::Writer<rapidjson::OStreamWrapper> writer(osw);
-	doc.Accept(writer);
-	return true;
-}*/
-
 int main() {
 	//ReadFirstSheet(TABLE_NAME);
 	//ReadSecondSheet(TABLE_NAME);
