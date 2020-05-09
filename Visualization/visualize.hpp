@@ -2,8 +2,9 @@
 #include <string>
 #include <vector>
 #include <SFML/Graphics.hpp>
+#include "calendar.hpp"
 
-typedef size_t timePoint;
+typedef unsigned timePoint;
 
 class Theme{
 public:
@@ -21,7 +22,8 @@ public:
 namespace gProp{
     Theme theme;
     sf::Font font;
-    const static std::string fontPath("./Fonts/lucida.ttf");
+    Calendar calendar;
+    const static std::string fontPath("./Fonts/courierNew.ttf");
 }
 
 //window properties
@@ -29,13 +31,13 @@ namespace wProp{
     const static std::string windowName("Case: S7 Technics");
     const int windowWidth = 1000;
     const int windowHeight = 500;
-    const int windowFPS = 1;
+    const int windowFPS = 15;
 }
 
 //planes colors
 namespace pColor{
     const static sf::Color S7(sf::Color(80, 158, 47, 255));
-    const static sf::Color Aeroflot(sf::Color(81, 45, 109, 255));
+    const static sf::Color Aeroflot(sf::Color(153, 93, 199, 255));
     const static sf::Color UralAirlines(sf::Color(155, 34, 66, 255));
     const static sf::Color Pobeda(sf::Color(210, 38, 48, 255));
     const static sf::Color Alrosa(sf::Color(45, 204, 211, 255));
@@ -53,10 +55,14 @@ namespace aProp{
 
 //planes properties
 namespace pProp{
-    const int planeOutlineThickness = 2;
+    const int planeOutlineThickness = 1;
     const int planeTextPadding = 1;
 }
 
+//date properties
+namespace dProp{
+    const int dateTextPadding = 10;
+}
 
 class Plane{
 public:
@@ -95,11 +101,14 @@ int calculateAngarFontSize(const sf::RectangleShape &rec, const Angar &a, int di
 int calculatePlaneFontSize(const sf::RectangleShape &rec, const Plane &p, const std::string &str);
 
 //отрисовка ангаров и самолётов
+void drawAll(sf::RenderWindow &window, const std::vector<std::vector<Angar>> &timeGrid, timePoint t);
 void drawAngarsAndPlanes(sf::RenderWindow &window, const std::vector<std::vector<Angar>> &timeGrid,
     timePoint t, double widthCompressionRatio, double heightCompressionRatio);
 void drawPlanes(sf::RenderWindow &window, const std::vector<std::vector<Angar>> &timeGrid,
     timePoint t, int i, double widthCompressionRatio, double heightCompressionRatio,
     int angarX, int angarY);
+
+void drawDate(sf::RenderWindow &window, timePoint t);
 
 //определение цвета самолёта
 sf::Color determinePlaneColor(const std::string &planeCompanyName);
