@@ -8,10 +8,12 @@
 #define debugMode
 //#define musicPlay
 
-Plane::Plane(const std::string &newName, int newWidth, int newHeight){
+Plane::Plane(const std::string &newName, int newWidth, int newHeight, int newX, int newY){
     name = newName;
     width = newWidth;
     height = newHeight;
+    x = newX;
+    y = newY;
 }
 
 Plane::Plane(const Plane &p){
@@ -34,7 +36,76 @@ bool loadFont(sf::Font &font, const std::string &fontPath){
     return true;
 }
 
-void drawAngars(sf::RenderWindow &window, const std::vector<std::vector<Angar>> &timeGrid, timePoint t){
+double calculateWidthCompressionRatio(const std::vector<std::vector<Angar>> &timeGrid){
+    //количество ангаров
+    int numberOfAngars = timeGrid[t].size();
+
+    //подсчёт длины
+    int totalAngarWidth = 0;
+    for(int i = 0; i < timeGrid[t].size(); i++){
+        totalAngarWidth += timeGrid[t][i].width;
+    }
+
+    //какая длинна и высота нужна в сумме для отрисовки ангаров с учетом расстояния между ними и до стен
+    int totalActualWidth = (numberOfAngars + 1) * aProp::minDistanceBetweenAngars + totalAngarWidth;
+
+    return static_cast<double>(wProp::windowWidth) / totalActualWidth;
+}
+
+double calculateHeightCompressionRatio(const std::vector<std::vector<Angar>> &timeGrid){
+    //подсчёт ширины
+    int maxHeight = timeGrid[t][0].height;
+    for(int i = 0; i < timeGrid[t].size(); i++){
+        if(timeGrid[t][i].height > maxHeight){
+            maxHeight = timeGrid[t][i].height;
+        }
+    }
+
+    //ангары располагаются в ряд, поэтому учитывается максимальная высота ангара
+    int totalActualHeight = (minDistanceBetweenAngars * 2) + maxHeight;
+
+    return static_cast<double>(wProp::windowHeight) / totalActualHeight;
+}
+
+void drawTest(sf::RenderWindow &window){
+    sf::RectangleShape rec;
+
+    rec.setSize(sf::Vector2f(50, 200));
+
+    rec.setPosition(0,0);
+    rec.setFillColor(pColor::S7);
+    window.draw(rec);
+
+    rec.setPosition(50,0);
+    rec.setFillColor(pColor::Aeroflot);
+    window.draw(rec);
+    
+    rec.setPosition(100,0);
+    rec.setFillColor(pColor::UralAirlines);
+    window.draw(rec);
+    
+    rec.setPosition(150,0);
+    rec.setFillColor(pColor::Pobeda);
+    window.draw(rec);
+    
+    rec.setPosition(200,0);
+    rec.setFillColor(pColor::Alrosa);
+    window.draw(rec);
+    
+    rec.setPosition(250,0);
+    rec.setFillColor(pColor::Utair);
+    window.draw(rec);
+    
+    rec.setPosition(300,0);
+    rec.setFillColor(pColor::Rossiya);
+    window.draw(rec);
+    
+    rec.setPosition(350,0);
+    rec.setFillColor(pColor::Belavia);
+    window.draw(rec);
+}
+
+void drawAll(sf::RenderWindow &window, const std::vector<std::vector<Angar>> &timeGrid, timePoint t){
     try{
         timeGrid.at(t);
     }catch(...){
@@ -48,55 +119,17 @@ void drawAngars(sf::RenderWindow &window, const std::vector<std::vector<Angar>> 
         return;
     }
 
-    sf::RectangleShape angarRec;
-    sf::RectangleShape planeRec;
-
-    sf::Text text;
-    /*
-    text.setFont(wProp::font);
-    text.setCharacterSize(30);
-    text.setFillColor(sf::Color::Red);
-    text.setPosition(20, 30);
-    */
-
-    //количество ангаров
-    int numberOfAngars = timeGrid[t].size();
-
-    //минимальное расстояние между анагарми в пикселях в процентах от длины окна
-    int minDistanceBetweenAngars = 5 * wProp::windowWidth / 100; //5%
-
-    //подсчёт длины и ширины
-    int totalAngarWidth = 0;
-    int maxHeight = timeGrid[t][0].height;
-    for(int i = 0; i < timeGrid[t].size(); i++){
-        totalAngarWidth += timeGrid[t][i].width;
-
-        if(timeGrid[t][i].height > maxHeight){
-            maxHeight = timeGrid[t][i].height;
-        }
-    }
-
-    //какая длинна и высота нужна в сумме для отрисовки ангаров с учетом расстояния между ними и до стен
-    int totalActualWidth = (numberOfAngars + 1) * minDistanceBetweenAngars + totalAngarWidth;
-
-    //ангары располагаются в ряд, поэтому учитывается максимальная высота ангара
-    int totalActualHeight = (minDistanceBetweenAngars * 2) + maxHeight;
-
     //во сколько раз нужно всё сжать, если получилась слишком большая длина
-    double widthCompressionRatio = static_cast<double>(wProp::windowWidth) / totalActualWidth;
-    double heightCompressionRatio = static_cast<double>(wProp::windowHeight) / totalActualHeight;
-
-    /*
-    if(heightCompressionRatio > 1){
-        heightCompressionRatio = 1;
-    }
-    */
+    double widthCompressionRatio = calculateWidthCopmressionRatio(timeGrid);
+    double heightCompressionRatio = calculateHeightCopmressionRatio(timeGrid);
 
     #ifdef debugMode
     std::cout << "widthCompressionRatio: " << widthCompressionRatio << std::endl;
     std::cout << "heightCompressionRatio: " << heightCompressionRatio << std::endl;
     #endif
 
+    sf::Text text;
+    text.setFont(wProp::font);
 
     int lastRectanglePos = 0;
     //отрисовка ангаров в масштабе
@@ -115,13 +148,18 @@ void drawAngars(sf::RenderWindow &window, const std::vector<std::vector<Angar>> 
         lastRectanglePos = x + angarWidth * widthCompressionRatio;
 
         rec.setPosition(x, y);
-        rec.setFillColor(sf::Color::Black);
-        rec.setOutlineColor(sf::Color::Red);
+        rec.setFillColor(pColor::AngarInside);
+        rec.setOutlineColor(pColor::AngarOutline);
         rec.setOutlineThickness(2);
 
         window.draw(rec);
     }
     
+    
+    text.setCharacterSize(30);
+    text.setFillColor(sf::Color::Red);
+    text.setPosition(20, 30);
+
     //window.draw(text);
 }
 
@@ -180,8 +218,9 @@ int main(){
             }
         }
 
-        window.clear();
-        drawAngars(window, angarTimeGrid, t);
+        window.clear(wProp::windowBGColor);
+        drawAll(window, angarTimeGrid, t);
+        //drawTest(window);
         window.display();
     }
 
