@@ -232,10 +232,10 @@ void drawDate(sf::RenderWindow &window, timePoint t){
     sf::Text text;
     text.setString(date);
     text.setFont(gProp::font);
-    text.setCharacterSize(30);
+    text.setCharacterSize(20);
     text.setFillColor(gProp::theme.angarOutlineColor);
 
-    int x = wProp::windowWidth - date.length() * text.getCharacterSize() + 30;
+    int x = wProp::windowWidth - date.length() * text.getCharacterSize() + 65;
     int y = wProp::windowHeight - text.getCharacterSize() - dProp::dateTextPadding;
     text.setPosition(x, y);
 
@@ -343,7 +343,6 @@ int main(){
     gProp::theme.applyTheme(Theme::Light);
 
     std::vector<std::vector<Angar>> angarTimeGrid;
-    timePoint t = 0;
 
     Plane p1("Il-96-300", "S7", 23, 29, 3, 3);
     Plane p2("An-24", "Aeroflot", 20, 40, 90, 3);
@@ -358,11 +357,8 @@ int main(){
     pv.push_back(p1);
     pv.push_back(p2);
     pv.push_back(p3);
-    //pv.push_back(p4);
     pv.push_back(p5);
     pv.push_back(p6);
-    //pv.push_back(p7);
-    //pv.push_back(p8);
 
     Angar a("SVO", 80, 300, pv);
     Angar b("VKO", 90, 200, pv);
@@ -388,7 +384,7 @@ int main(){
 
 
     //sf::Mouse mouse;
-
+    timePoint t = 0;
     while(window.isOpen()){
         sf::Event event;
         while(window.pollEvent(event)){
@@ -399,6 +395,16 @@ int main(){
                 //sf::Vector2i mouseClick = sf::Mouse::getPosition();
                 //sf::Vector2i windowPos = window.getPosition();
                 //std::cout << "Left click at " << mouseClick.x - windowPos.x << " " << mouseClick.y - windowPos.y << std::endl;
+            }
+            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right)){
+                if(t < angarTimeGrid.size()-1){
+                    t++;
+                }
+            }
+            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left)){
+                if(t > 0){
+                    t--;
+                }
             }
         }
 
