@@ -9,6 +9,6 @@ int main() {
     std::ifstream file("table.json");
     Json::Document doc = Json::Load(file);
     Json::Print(doc, std::cout);
-    HangarManager manager(doc);
+
     return 0;
 }

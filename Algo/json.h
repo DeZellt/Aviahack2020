@@ -49,7 +49,13 @@ namespace Json {
         }
 
         long long AsLong() const {
-            return std::get<long long>(*this);
+            long long result;
+            try {
+                result = std::get<long long>(*this);
+            } catch(...) {
+                result = std::get<double>(*this);
+            }
+            return result;
         }
 
         int AsInt() const {
