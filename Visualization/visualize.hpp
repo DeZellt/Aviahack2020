@@ -1,17 +1,34 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <SFML/Graphics.hpp>
 
+typedef size_t timePoint;
+
+//window properties
 namespace wProp{
     sf::Font font;
+    const static std::string fontPath("./Fonts/lucida.ttf");
 
     const std::string windowName;
     const int windowWidth = 640;
     const int windowHeight = 480;
-    const int windowFPS = 10;
-};
+    const int windowFPS = 1;
 
-typedef size_t timePoint;
+    const static sf::Color windowBGColor(sf::Color::Black);
+}
+
+//plane color
+namespace pColor{
+    const static sf::Color S7(sf::Color(191, 214, 0, 255)); //салатовый
+    const static sf::Color Aeroflot(sf::Color(42, 89, 157, 255)); //синий
+    const static sf::Color UralAirlines(sf::Color(220, 26, 44, 255)); //бордовый
+    const static sf::Color Pobeda(sf::Color(19, 160, 231, 255)); //голубой
+    const static sf::Color Alrosa(sf::Color(69, 151, 215, 255)); //голубой
+    const static sf::Color Utair(sf::Color(0, 53, 148, 255)); //глубокий синий
+    const static sf::Color Rossiya(sf::Color(227, 19, 44, 255)); //красно-малиновый
+    const static sf::Color Belavia(sf::Color(69, 92, 199, 255)); //голубой
+}
 
 class Plane{
 public:
@@ -33,5 +50,8 @@ public:
     std::vector<Plane> planes;
 };
 
-//окно для рендеринга, массив с днями, в каждом из которых находятся ангары в определенном состоянии
+//отрисовка ангаров и самолетов в зависиости от текущего дня
 void drawAngars(sf::RenderWindow &window, const std::vector<std::vector<Angar>> &timeGrid, timePoint t);
+
+//загрузка шрифта из файла
+bool loadFont(sf::Font &font, const std::string &fontPath);
