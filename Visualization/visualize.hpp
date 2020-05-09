@@ -5,40 +5,72 @@
 
 typedef size_t timePoint;
 
-//window properties
-namespace wProp{
+class Theme{
+public:
+    Theme();
+    Theme(int theme);
+    void applyTheme(int theme);
+
+    sf::Color windowBGColor, angarOutlineColor, angarInsideColor;
+    int curTheme;
+    enum {Light, Dark};
+};
+
+
+//global properties
+namespace gProp{
+    Theme theme;
     sf::Font font;
     const static std::string fontPath("./Fonts/lucida.ttf");
+}
 
-    const std::string windowName;
-    const int windowWidth = 640;
-    const int windowHeight = 480;
+//window properties
+namespace wProp{
+    const static std::string windowName("Case: S7 Technics");
+    const int windowWidth = 1000;
+    const int windowHeight = 500;
     const int windowFPS = 1;
-
-    const static sf::Color windowBGColor(sf::Color::Black);
 }
 
-//plane color
+//planes colors
 namespace pColor{
-    const static sf::Color S7(sf::Color(191, 214, 0, 255)); //салатовый
-    const static sf::Color Aeroflot(sf::Color(42, 89, 157, 255)); //синий
-    const static sf::Color UralAirlines(sf::Color(220, 26, 44, 255)); //бордовый
-    const static sf::Color Pobeda(sf::Color(19, 160, 231, 255)); //голубой
-    const static sf::Color Alrosa(sf::Color(69, 151, 215, 255)); //голубой
-    const static sf::Color Utair(sf::Color(0, 53, 148, 255)); //глубокий синий
-    const static sf::Color Rossiya(sf::Color(227, 19, 44, 255)); //красно-малиновый
-    const static sf::Color Belavia(sf::Color(69, 92, 199, 255)); //голубой
+    const static sf::Color S7(sf::Color(80, 158, 47, 255));
+    const static sf::Color Aeroflot(sf::Color(81, 45, 109, 255));
+    const static sf::Color UralAirlines(sf::Color(155, 34, 66, 255));
+    const static sf::Color Pobeda(sf::Color(210, 38, 48, 255));
+    const static sf::Color Alrosa(sf::Color(45, 204, 211, 255));
+    const static sf::Color Utair(sf::Color(0, 127, 163, 255));
+    const static sf::Color Rossiya(sf::Color(245, 182, 205, 255));
+    const static sf::Color Belavia(sf::Color(240, 233, 145, 255));
 }
+
+//angars properties
+namespace aProp{
+    const int minDistanceBetweenAngars = 1 * wProp::windowWidth / 100; // 1 % of window width
+    const int angarOutlineThickness = 2;
+    const int angarTextPadding = 2;
+}
+
+//planes properties
+namespace pProp{
+    const int planeOutlineThickness = 2;
+    const int planeTextPadding = 1;
+}
+
 
 class Plane{
 public:
     Plane(){};
-    Plane(const std::string &newName, int newWidth, int newHeight);
+    Plane(const std::string &newName, const std::string &newCompanyName, 
+        int newWidth, int newHeight, int newX, int newY);
     Plane(const Plane &p);
 
     std::string name;
+    std::string companyName;
     int width, height;
+    int x, y;
 };
+
 
 class Angar{
 public:
@@ -50,8 +82,24 @@ public:
     std::vector<Plane> planes;
 };
 
-//отрисовка ангаров и самолетов в зависиости от текущего дня
-void drawAngars(sf::RenderWindow &window, const std::vector<std::vector<Angar>> &timeGrid, timePoint t);
 
 //загрузка шрифта из файла
 bool loadFont(sf::Font &font, const std::string &fontPath);
+
+//коэффициенты сжатия по горизонтали и вертикали
+double calculateWidthCompressionRatio(const std::vector<std::vector<Angar>> &timeGrid, timePoint t);
+double calculateHeightCompressionRatio(const std::vector<std::vector<Angar>> &timeGrid, timePoint t);
+
+//вычисление размера шрифта для названий ангара и самолёта 
+int calculateAngarFontSize(const sf::RectangleShape &rec, const Angar &a, int distanceToUpperBound);
+int calculatePlaneFontSize(const sf::RectangleShape &rec, const Plane &p, const std::string &str);
+
+//отрисовка ангаров и самолётов
+void drawAngarsAndPlanes(sf::RenderWindow &window, const std::vector<std::vector<Angar>> &timeGrid,
+    timePoint t, double widthCompressionRatio, double heightCompressionRatio);
+void drawPlanes(sf::RenderWindow &window, const std::vector<std::vector<Angar>> &timeGrid,
+    timePoint t, int i, double widthCompressionRatio, double heightCompressionRatio,
+    int angarX, int angarY);
+
+//определение цвета самолёта
+sf::Color determinePlaneColor(const std::string &planeCompanyName);
