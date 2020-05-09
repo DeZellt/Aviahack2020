@@ -5,24 +5,39 @@
 
 typedef size_t timePoint;
 
-//window properties
-namespace wProp{
+class Theme{
+public:
+    Theme();
+    Theme(int theme);
+    void applyTheme(int theme);
+
+    sf::Color windowBGColor, angarOutlineColor, angarInsideColor;
+    int curTheme;
+    enum {White, Dark};
+};
+
+
+//global properties
+namespace gProp{
+    Theme theme;
     sf::Font font;
     const static std::string fontPath("./Fonts/lucida.ttf");
+}
 
+
+//window properties
+namespace wProp{
     const static std::string windowName("Case: S7 Technics");
     const int windowWidth = 640;
     const int windowHeight = 480;
     const int windowFPS = 1;
 
-    const static sf::Color windowBGColor(sf::Color(49, 54, 55, 255));
+    //const static sf::Color windowBGColor(sf::Color(49, 54, 55, 255));
 }
+
 
 //angars & planes colors
 namespace pColor{
-    const static sf::Color AngarOutline(sf::Color::White);
-    const static sf::Color AngarInside(wProp::windowBGColor);
-
     const static sf::Color S7(sf::Color(80,  158, 47, 255));
     const static sf::Color Aeroflot(sf::Color(81, 45, 109, 255));
     const static sf::Color UralAirlines(sf::Color(155, 34, 66, 255));
@@ -33,11 +48,14 @@ namespace pColor{
     const static sf::Color Belavia(sf::Color(240, 233, 145, 255));
 }
 
+
 //angar properties
 namespace aProp{
-    //минимальное расстояние между анагарми в пикселях в процентах от длины окна
-    const int minDistanceBetweenAngars = 5 * wProp::windowWidth / 100; //5%
+    const int minDistanceBetweenAngars = 2 * wProp::windowWidth / 100; // 2 % of window width
+    const int angarOutlineThickness = 2;
+    const int angarTextPadding = 2;
 }
+
 
 class Plane{
 public:
@@ -50,6 +68,7 @@ public:
     int x, y;
 };
 
+
 class Angar{
 public:
     Angar(){};
@@ -60,14 +79,16 @@ public:
     std::vector<Plane> planes;
 };
 
+
 //отрисовка ангаров и самолетов в зависиости от текущего дня
 void drawAll(sf::RenderWindow &window, const std::vector<std::vector<Angar>> &timeGrid, timePoint t);
 
 //загрузка шрифта из файла
 bool loadFont(sf::Font &font, const std::string &fontPath);
 
-//коэффициент сжатия по горизонтали
-double calculateWidthCompressionRatio(const std::vector<std::vector<Angar>> &timeGrid);
+//коэффициенты сжатия по горизонтали и вертикали
+double calculateWidthCompressionRatio(const std::vector<std::vector<Angar>> &timeGrid, timePoint t);
+double calculateHeightCompressionRatio(const std::vector<std::vector<Angar>> &timeGrid, timePoint t);
 
-//коэффициент сжатия по вертикали
-double calculateHeightCompressionRatio(const std::vector<std::vector<Angar>> &timeGrid);
+//вычисление размера шрифта для названия ангара
+int calculateAngarFontSize(const sf::RectangleShape &rec, const Angar &a, int distanceToUpperBound);

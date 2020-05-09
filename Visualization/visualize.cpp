@@ -36,7 +36,7 @@ bool loadFont(sf::Font &font, const std::string &fontPath){
     return true;
 }
 
-double calculateWidthCompressionRatio(const std::vector<std::vector<Angar>> &timeGrid){
+double calculateWidthCompressionRatio(const std::vector<std::vector<Angar>> &timeGrid, timePoint t){
     //количество ангаров
     int numberOfAngars = timeGrid[t].size();
 
@@ -52,7 +52,7 @@ double calculateWidthCompressionRatio(const std::vector<std::vector<Angar>> &tim
     return static_cast<double>(wProp::windowWidth) / totalActualWidth;
 }
 
-double calculateHeightCompressionRatio(const std::vector<std::vector<Angar>> &timeGrid){
+double calculateHeightCompressionRatio(const std::vector<std::vector<Angar>> &timeGrid, timePoint t){
     //подсчёт ширины
     int maxHeight = timeGrid[t][0].height;
     for(int i = 0; i < timeGrid[t].size(); i++){
@@ -62,9 +62,46 @@ double calculateHeightCompressionRatio(const std::vector<std::vector<Angar>> &ti
     }
 
     //ангары располагаются в ряд, поэтому учитывается максимальная высота ангара
-    int totalActualHeight = (minDistanceBetweenAngars * 2) + maxHeight;
+    int totalActualHeight = aProp::minDistanceBetweenAngars * 2 + maxHeight;
 
     return static_cast<double>(wProp::windowHeight) / totalActualHeight;
+}
+
+int calculateAngarFontSize(const sf::RectangleShape &rec, const Angar &angar, int distanceToUpperBound){
+    int angarActualWidth = rec.getSize().x;
+    int angarNameLength = angar.name.length();
+
+    return std::min(angarActualWidth / angarNameLength, distanceToUpperBound - aProp::angarOutlineThickness - aProp::angarTextPadding);
+}
+
+Theme::Theme(){
+    curTheme = Theme::White;
+}
+
+Theme::Theme(int theme){
+    Theme::applyTheme(theme);
+}
+
+void Theme::applyTheme(int theme){
+    switch(theme){
+        case Theme::White:{
+            windowBGColor = sf::Color(253, 246, 227, 255);
+            angarOutlineColor = sf::Color::Black;
+            angarInsideColor = windowBGColor;
+            break;
+        }
+        case Theme::Dark:{
+            windowBGColor = sf::Color(49, 54, 55, 255);
+            angarOutlineColor = sf::Color::White;
+            angarInsideColor = windowBGColor;
+            break;
+        }
+        default:{
+            std::cerr << "Error in applying theme: incorrect theme\n";
+            break;
+        }
+    }
+    curTheme = theme;
 }
 
 void drawTest(sf::RenderWindow &window){
@@ -120,8 +157,8 @@ void drawAll(sf::RenderWindow &window, const std::vector<std::vector<Angar>> &ti
     }
 
     //во сколько раз нужно всё сжать, если получилась слишком большая длина
-    double widthCompressionRatio = calculateWidthCopmressionRatio(timeGrid);
-    double heightCompressionRatio = calculateHeightCopmressionRatio(timeGrid);
+    double widthCompressionRatio = calculateWidthCompressionRatio(timeGrid, t);
+    double heightCompressionRatio = calculateHeightCompressionRatio(timeGrid, t);
 
     #ifdef debugMode
     std::cout << "widthCompressionRatio: " << widthCompressionRatio << std::endl;
@@ -129,73 +166,73 @@ void drawAll(sf::RenderWindow &window, const std::vector<std::vector<Angar>> &ti
     #endif
 
     sf::Text text;
-    text.setFont(wProp::font);
+    text.setFont(gProp::font);
 
     int lastRectanglePos = 0;
     //отрисовка ангаров в масштабе
     for(int i = 0; i < timeGrid[t].size(); i++){
-        std::string angarName = timeGrid[t][i].name;
-        int angarWidth = timeGrid[t][i].width;
-        int angarHeight = timeGrid[t][i].height;
+        int angarWidth = timeGrid[t][i].width * widthCompressionRatio;
+        int angarHeight = timeGrid[t][i].height * heightCompressionRatio;
 
-        sf::RectangleShape rec;
-        rec.setSize(sf::Vector2f(angarWidth * widthCompressionRatio, angarHeight * heightCompressionRatio));
+        sf::RectangleShape angarRec;
+        angarRec.setSize(sf::Vector2f(angarWidth, angarHeight));
         
         int x, y;
-        x = minDistanceBetweenAngars * widthCompressionRatio + lastRectanglePos;
-        y = minDistanceBetweenAngars * heightCompressionRatio;
+        x = aProp::minDistanceBetweenAngars * widthCompressionRatio + lastRectanglePos;
+        y = aProp::minDistanceBetweenAngars * heightCompressionRatio;
 
-        lastRectanglePos = x + angarWidth * widthCompressionRatio;
 
-        rec.setPosition(x, y);
-        rec.setFillColor(pColor::AngarInside);
-        rec.setOutlineColor(pColor::AngarOutline);
-        rec.setOutlineThickness(2);
+        lastRectanglePos = x + angarWidth;
 
-        window.draw(rec);
+        angarRec.setPosition(x, y);
+        angarRec.setFillColor(gProp::theme.windowBGColor);
+        angarRec.setOutlineColor(gProp::theme.angarOutlineColor);
+        angarRec.setOutlineThickness(aProp::angarOutlineThickness);
+
+        window.draw(angarRec);
+
+        int angarFontSize = calculateAngarFontSize(angarRec, timeGrid[t][i], y);
+        text.setString(timeGrid[t][i].name);
+        text.setCharacterSize(angarFontSize);
+        text.setFillColor(gProp::theme.angarOutlineColor);
+        text.setPosition(x, y - angarFontSize - aProp::angarOutlineThickness - aProp::angarTextPadding);
+        
+        window.draw(text);
     }
     
-    
-    text.setCharacterSize(30);
-    text.setFillColor(sf::Color::Red);
-    text.setPosition(20, 30);
-
-    //window.draw(text);
 }
 
 
 int main(){
-    if(!loadFont(wProp::font, wProp::fontPath)){
+    if(!loadFont(gProp::font, gProp::fontPath)){
         std::cerr << "------------------------------\n";
-        std::cerr << "Error: can not load font from path \'" << wProp::fontPath << "\'\n";
+        std::cerr << "Error: can not load font from path \'" << gProp::fontPath << "\'\n";
         return 1;
     }
+
+    gProp::theme.applyTheme(Theme::White);
 
     std::vector<std::vector<Angar>> angarTimeGrid;
     timePoint t = 0;
 
-    Plane p1("plane1", 10, 20);
-    Plane p2("plane2", 30, 40);
-    Plane p3("plane3", 10, 10);
+    Plane p1("plane1", 10, 20, 0, 0);
+    Plane p2("plane2", 30, 40, 15, 0);
+    Plane p3("plane3", 10, 10, 0, 50);
 
     std::vector<Plane> pv;
     pv.push_back(p1);
     pv.push_back(p2);
     pv.push_back(p3);
 
-    Angar a("sve", 80, 300, pv);
-    Angar b("vso", 90, 200, pv);
-    Angar c("xxx", 70, 150, pv);
-    //Angar a("sve", 300, 80, pv);
-    //Angar b("vso", 200, 90, pv);
-    //Angar c("xxx", 150, 70, pv);
+    Angar a("SVO", 80, 300, pv);
+    Angar b("VKO", 90, 200, pv);
+    Angar c("DME", 70, 150, pv);
 
     std::vector<Angar> v;
     v.push_back(a);
     v.push_back(b);
     v.push_back(c);
     
-
     angarTimeGrid.push_back(v);
 
     sf::RenderWindow window(sf::VideoMode(wProp::windowWidth, wProp::windowHeight), wProp::windowName);
@@ -210,15 +247,15 @@ int main(){
     #endif
 
 
-    while (window.isOpen()){
+    while(window.isOpen()){
         sf::Event event;
-        while (window.pollEvent(event)){
-            if (event.type == sf::Event::Closed){
+        while(window.pollEvent(event)){
+            if(event.type == sf::Event::Closed){
                 window.close();
             }
         }
 
-        window.clear(wProp::windowBGColor);
+        window.clear(gProp::theme.windowBGColor);
         drawAll(window, angarTimeGrid, t);
         //drawTest(window);
         window.display();
