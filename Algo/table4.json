@@ -1,0 +1,219 @@
+﻿[
+  {
+    "TO": "C-Check",
+    "name": "IL-96-300",
+    "DME": 20000.0,
+    "SVO": 21000.0,
+    "VKO": null
+  },
+  {
+    "TO": "C-Check",
+    "name": "IL-96-400",
+    "DME": 23000.0,
+    "SVO": 26000.0,
+    "VKO": null
+  },
+  {
+    "TO": "C-Check",
+    "name": "Tu-154M",
+    "DME": null,
+    "SVO": 15000.0,
+    "VKO": 12000.0
+  },
+  {
+    "TO": "C-Check",
+    "name": "An-24",
+    "DME": 12000.0,
+    "SVO": 10000.0,
+    "VKO": null
+  },
+  {
+    "TO": "C-Check",
+    "name": "An-124",
+    "DME": 60000.0,
+    "SVO": 60000.0,
+    "VKO": null
+  },
+  {
+    "TO": "C-Check",
+    "name": "A319",
+    "DME": 30000.0,
+    "SVO": 30000.0,
+    "VKO": 28000.0
+  },
+  {
+    "TO": "C-Check",
+    "name": "A320",
+    "DME": 33000.0,
+    "SVO": 34000.0,
+    "VKO": 32000.0
+  },
+  {
+    "TO": "C-Check",
+    "name": "A321",
+    "DME": 40000.0,
+    "SVO": 38000.0,
+    "VKO": 33000.0
+  },
+  {
+    "TO": "C-Check",
+    "name": "737-200",
+    "DME": 28000.0,
+    "SVO": null,
+    "VKO": 30000.0
+  },
+  {
+    "TO": "C-Check",
+    "name": "737-300",
+    "DME": 32000.0,
+    "SVO": null,
+    "VKO": 32000.0
+  },
+  {
+    "TO": "C-Check",
+    "name": "737-800",
+    "DME": 38000.0,
+    "SVO": null,
+    "VKO": 39000.0
+  },
+  {
+    "TO": "D-Check",
+    "name": "A319",
+    "DME": null,
+    "SVO": 40000.0,
+    "VKO": 39000.0
+  },
+  {
+    "TO": "D-Check",
+    "name": "A320",
+    "DME": null,
+    "SVO": 45000.0,
+    "VKO": 44000.0
+  },
+  {
+    "TO": "D-Check",
+    "name": "A321",
+    "DME": null,
+    "SVO": 53000.0,
+    "VKO": 53000.0
+  },
+  {
+    "TO": "D-Check",
+    "name": "737-200",
+    "DME": 42000.0,
+    "SVO": null,
+    "VKO": 44000.0
+  },
+  {
+    "TO": "D-Check",
+    "name": "737-300",
+    "DME": 47000.0,
+    "SVO": null,
+    "VKO": 51000.0
+  },
+  {
+    "TO": "D-Check",
+    "name": "737-800",
+    "DME": 55000.0,
+    "SVO": null,
+    "VKO": 60000.0
+  },
+  {
+    "TO": "Redelivery",
+    "name": "A319",
+    "DME": null,
+    "SVO": 45000.0,
+    "VKO": 42000.0
+  },
+  {
+    "TO": "Redelivery",
+    "name": "A320",
+    "DME": null,
+    "SVO": 56000.0,
+    "VKO": 49000.0
+  },
+  {
+    "TO": "Redelivery",
+    "name": "A321",
+    "DME": null,
+    "SVO": 62000.0,
+    "VKO": null
+  },
+  {
+    "TO": "Painting",
+    "name": "IL-96-300",
+    "DME": 10000.0,
+    "SVO": 10000.0,
+    "VKO": null
+  },
+  {
+    "TO": "Painting",
+    "name": "IL-96-400",
+    "DME": 12000.0,
+    "SVO": 12000.0,
+    "VKO": null
+  },
+  {
+    "TO": "Painting",
+    "name": "Tu-154M",
+    "DME": 9000.0,
+    "SVO": 11000.0,
+    "VKO": 7000.0
+  },
+  {
+    "TO": "Painting",
+    "name": "An-24",
+    "DME": 8000.0,
+    "SVO": 8000.0,
+    "VKO": 6000.0
+  },
+  {
+    "TO": "Painting",
+    "name": "An-124",
+    "DME": 25000.0,
+    "SVO": 27000.0,
+    "VKO": null
+  },
+  {
+    "TO": "Painting",
+    "name": "A319",
+    "DME": 15000.0,
+    "SVO": 15000.0,
+    "VKO": 12000.0
+  },
+  {
+    "TO": "Painting",
+    "name": "A320",
+    "DME": 17000.0,
+    "SVO": 19000.0,
+    "VKO": 15000.0
+  },
+  {
+    "TO": "Painting",
+    "name": "A321",
+    "DME": 20000.0,
+    "SVO": 21000.0,
+    "VKO": 17000.0
+  },
+  {
+    "TO": "Painting",
+    "name": "737-200",
+    "DME": 16000.0,
+    "SVO": 17000.0,
+    "VKO": 12000.0
+  },
+  {
+    "TO": "Painting",
+    "name": "737-300",
+    "DME": 18000.0,
+    "SVO": 19000.0,
+    "VKO": 15000.0
+  },
+  {
+    "TO": "Painting",
+    "name": "737-800",
+    "DME": 21000.0,
+    "SVO": 21000.0,
+    "VKO": 18000.0
+  }
+]

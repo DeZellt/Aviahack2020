@@ -1,0 +1,586 @@
+﻿[
+  {
+    "company": "S7",
+    "type": "737-800",
+    "TO": "C-Check",
+    "needs": 5.0,
+    "length": 30.0,
+    "min": 3.0
+  },
+  {
+    "company": "S7",
+    "type": "737-800",
+    "TO": "Painting",
+    "needs": 5.0,
+    "length": 12.0,
+    "min": 3.0
+  },
+  {
+    "company": "S7",
+    "type": "IL-96-300",
+    "TO": "C-Check",
+    "needs": 2.0,
+    "length": 50.0,
+    "min": 1.0
+  },
+  {
+    "company": "S7",
+    "type": "Tu-154M",
+    "TO": "C-Check",
+    "needs": 2.0,
+    "length": 40.0,
+    "min": 2.0
+  },
+  {
+    "company": "S7",
+    "type": "Tu-154M",
+    "TO": "Painting",
+    "needs": 2.0,
+    "length": 12.0,
+    "min": 2.0
+  },
+  {
+    "company": "S7",
+    "type": "A319",
+    "TO": "C-Check",
+    "needs": 1.0,
+    "length": 23.0,
+    "min": 1.0
+  },
+  {
+    "company": "S7",
+    "type": "A319",
+    "TO": "D-Check",
+    "needs": 2.0,
+    "length": 40.0,
+    "min": 2.0
+  },
+  {
+    "company": "S7",
+    "type": "A320",
+    "TO": "D-Check",
+    "needs": 1.0,
+    "length": 35.0,
+    "min": 1.0
+  },
+  {
+    "company": "S7",
+    "type": "A320",
+    "TO": "Redelivery",
+    "needs": 3.0,
+    "length": 60.0,
+    "min": 2.0
+  },
+  {
+    "company": "S7",
+    "type": "A320",
+    "TO": "C-Check",
+    "needs": 4.0,
+    "length": 25.0,
+    "min": 3.0
+  },
+  {
+    "company": "S7",
+    "type": "A320",
+    "TO": "Painting",
+    "needs": 12.0,
+    "length": 10.0,
+    "min": 6.0
+  },
+  {
+    "company": "S7",
+    "type": "A321",
+    "TO": "D-Check",
+    "needs": 1.0,
+    "length": 52.0,
+    "min": 1.0
+  },
+  {
+    "company": "S7",
+    "type": "A321",
+    "TO": "Redelivery",
+    "needs": 1.0,
+    "length": 62.0,
+    "min": 1.0
+  },
+  {
+    "company": "S7",
+    "type": "A321",
+    "TO": "C-Check",
+    "needs": 2.0,
+    "length": 27.0,
+    "min": 2.0
+  },
+  {
+    "company": "S7",
+    "type": "A321",
+    "TO": "Painting",
+    "needs": 4.0,
+    "length": 12.0,
+    "min": 4.0
+  },
+  {
+    "company": "Alrosa",
+    "type": "An-124",
+    "TO": "C-Check",
+    "needs": 2.0,
+    "length": 70.0,
+    "min": null
+  },
+  {
+    "company": "Alrosa",
+    "type": "An-24",
+    "TO": "Painting",
+    "needs": 2.0,
+    "length": 10.0,
+    "min": null
+  },
+  {
+    "company": "Alrosa",
+    "type": "An-24",
+    "TO": "C-Check",
+    "needs": 4.0,
+    "length": 30.0,
+    "min": null
+  },
+  {
+    "company": "Alrosa",
+    "type": "A320",
+    "TO": "C-Check",
+    "needs": 6.0,
+    "length": 30.0,
+    "min": null
+  },
+  {
+    "company": "Alrosa",
+    "type": "A321",
+    "TO": "C-Check",
+    "needs": 2.0,
+    "length": 35.0,
+    "min": 1.0
+  },
+  {
+    "company": "Alrosa",
+    "type": "A321",
+    "TO": "Painting",
+    "needs": 3.0,
+    "length": 15.0,
+    "min": null
+  },
+  {
+    "company": "Aeroflot",
+    "type": "737-800",
+    "TO": "D-Check",
+    "needs": 2.0,
+    "length": 40.0,
+    "min": 2.0
+  },
+  {
+    "company": "Aeroflot",
+    "type": "737-800",
+    "TO": "C-Check",
+    "needs": 6.0,
+    "length": 32.0,
+    "min": null
+  },
+  {
+    "company": "Aeroflot",
+    "type": "737-800",
+    "TO": "Painting",
+    "needs": 8.0,
+    "length": 15.0,
+    "min": null
+  },
+  {
+    "company": "Aeroflot",
+    "type": "IL-96-400",
+    "TO": "C-Check",
+    "needs": 4.0,
+    "length": 56.0,
+    "min": null
+  },
+  {
+    "company": "Aeroflot",
+    "type": "IL-96-400",
+    "TO": "Painting",
+    "needs": 4.0,
+    "length": 20.0,
+    "min": 2.0
+  },
+  {
+    "company": "Aeroflot",
+    "type": "Tu-154M",
+    "TO": "C-Check",
+    "needs": 3.0,
+    "length": 42.0,
+    "min": null
+  },
+  {
+    "company": "Aeroflot",
+    "type": "Tu-154M",
+    "TO": "Painting",
+    "needs": 4.0,
+    "length": 18.0,
+    "min": null
+  },
+  {
+    "company": "Aeroflot",
+    "type": "A320",
+    "TO": "D-Check",
+    "needs": 1.0,
+    "length": 40.0,
+    "min": null
+  },
+  {
+    "company": "Aeroflot",
+    "type": "A320",
+    "TO": "C-Check",
+    "needs": 5.0,
+    "length": 30.0,
+    "min": 5.0
+  },
+  {
+    "company": "Aeroflot",
+    "type": "A320",
+    "TO": "Painting",
+    "needs": 15.0,
+    "length": 12.0,
+    "min": 10.0
+  },
+  {
+    "company": "Aeroflot",
+    "type": "A321",
+    "TO": "D-Check",
+    "needs": 1.0,
+    "length": 65.0,
+    "min": null
+  },
+  {
+    "company": "Aeroflot",
+    "type": "A321",
+    "TO": "Redelivery",
+    "needs": 1.0,
+    "length": 70.0,
+    "min": 1.0
+  },
+  {
+    "company": "Aeroflot",
+    "type": "A321",
+    "TO": "C-Check",
+    "needs": 3.0,
+    "length": 35.0,
+    "min": 2.0
+  },
+  {
+    "company": "Aeroflot",
+    "type": "A321",
+    "TO": "Painting",
+    "needs": 4.0,
+    "length": 15.0,
+    "min": 2.0
+  },
+  {
+    "company": "Belavia",
+    "type": "737-200",
+    "TO": "Painting",
+    "needs": 1.0,
+    "length": 10.0,
+    "min": null
+  },
+  {
+    "company": "Belavia",
+    "type": "737-200",
+    "TO": "D-Check",
+    "needs": 2.0,
+    "length": 44.0,
+    "min": null
+  },
+  {
+    "company": "Belavia",
+    "type": "737-200",
+    "TO": "C-Check",
+    "needs": 6.0,
+    "length": 28.0,
+    "min": null
+  },
+  {
+    "company": "Belavia",
+    "type": "737-300",
+    "TO": "D-Check",
+    "needs": 2.0,
+    "length": 47.0,
+    "min": null
+  },
+  {
+    "company": "Belavia",
+    "type": "737-300",
+    "TO": "C-Check",
+    "needs": 3.0,
+    "length": 33.0,
+    "min": null
+  },
+  {
+    "company": "Belavia",
+    "type": "737-300",
+    "TO": "Painting",
+    "needs": 8.0,
+    "length": 12.0,
+    "min": null
+  },
+  {
+    "company": "Belavia",
+    "type": "An-24",
+    "TO": "C-Check",
+    "needs": 2.0,
+    "length": 34.0,
+    "min": null
+  },
+  {
+    "company": "Belavia",
+    "type": "Tu-154M",
+    "TO": "Painting",
+    "needs": 1.0,
+    "length": 10.0,
+    "min": 1.0
+  },
+  {
+    "company": "Belavia",
+    "type": "Tu-154M",
+    "TO": "C-Check",
+    "needs": 2.0,
+    "length": 35.0,
+    "min": null
+  },
+  {
+    "company": "Pobeda",
+    "type": "737-200",
+    "TO": "C-Check",
+    "needs": 2.0,
+    "length": 28.0,
+    "min": null
+  },
+  {
+    "company": "Pobeda",
+    "type": "737-200",
+    "TO": "Painting",
+    "needs": 3.0,
+    "length": 8.0,
+    "min": null
+  },
+  {
+    "company": "Pobeda",
+    "type": "737-300",
+    "TO": "Painting",
+    "needs": 3.0,
+    "length": 8.0,
+    "min": null
+  },
+  {
+    "company": "Pobeda",
+    "type": "737-300",
+    "TO": "C-Check",
+    "needs": 4.0,
+    "length": 30.0,
+    "min": 2.0
+  },
+  {
+    "company": "Pobeda",
+    "type": "737-800",
+    "TO": "Painting",
+    "needs": 5.0,
+    "length": 10.0,
+    "min": 2.0
+  },
+  {
+    "company": "Pobeda",
+    "type": "737-800",
+    "TO": "C-Check",
+    "needs": 6.0,
+    "length": 35.0,
+    "min": null
+  },
+  {
+    "company": "Russia",
+    "type": "An-124",
+    "TO": "C-Check",
+    "needs": 3.0,
+    "length": 80.0,
+    "min": null
+  },
+  {
+    "company": "Russia",
+    "type": "An-124",
+    "TO": "Painting",
+    "needs": 4.0,
+    "length": 25.0,
+    "min": null
+  },
+  {
+    "company": "Russia",
+    "type": "IL-96-300",
+    "TO": "Painting",
+    "needs": 3.0,
+    "length": 18.0,
+    "min": 1.0
+  },
+  {
+    "company": "Russia",
+    "type": "IL-96-300",
+    "TO": "C-Check",
+    "needs": 4.0,
+    "length": 45.0,
+    "min": 1.0
+  },
+  {
+    "company": "Russia",
+    "type": "A321",
+    "TO": "D-Check",
+    "needs": 1.0,
+    "length": 50.0,
+    "min": null
+  },
+  {
+    "company": "Russia",
+    "type": "A321",
+    "TO": "Redelivery",
+    "needs": 1.0,
+    "length": 70.0,
+    "min": 1.0
+  },
+  {
+    "company": "Russia",
+    "type": "A321",
+    "TO": "C-Check",
+    "needs": 3.0,
+    "length": 40.0,
+    "min": 3.0
+  },
+  {
+    "company": "Russia",
+    "type": "A321",
+    "TO": "Painting",
+    "needs": 5.0,
+    "length": 12.0,
+    "min": 5.0
+  },
+  {
+    "company": "Ural Airlines",
+    "type": "Tu-154M",
+    "TO": "C-Check",
+    "needs": 1.0,
+    "length": 40.0,
+    "min": 1.0
+  },
+  {
+    "company": "Ural Airlines",
+    "type": "Tu-154M",
+    "TO": "Painting",
+    "needs": 1.0,
+    "length": 12.0,
+    "min": 1.0
+  },
+  {
+    "company": "Ural Airlines",
+    "type": "A319",
+    "TO": "Redelivery",
+    "needs": 1.0,
+    "length": 50.0,
+    "min": 1.0
+  },
+  {
+    "company": "Ural Airlines",
+    "type": "A319",
+    "TO": "C-Check",
+    "needs": 2.0,
+    "length": 18.0,
+    "min": 1.0
+  },
+  {
+    "company": "Ural Airlines",
+    "type": "A319",
+    "TO": "Painting",
+    "needs": 2.0,
+    "length": 15.0,
+    "min": null
+  },
+  {
+    "company": "Ural Airlines",
+    "type": "A320",
+    "TO": "C-Check",
+    "needs": 4.0,
+    "length": 25.0,
+    "min": null
+  },
+  {
+    "company": "Ural Airlines",
+    "type": "A321",
+    "TO": "C-Check",
+    "needs": 1.0,
+    "length": 27.0,
+    "min": null
+  },
+  {
+    "company": "Ural Airlines",
+    "type": "A321",
+    "TO": "Painting",
+    "needs": 3.0,
+    "length": 12.0,
+    "min": null
+  },
+  {
+    "company": "Utair",
+    "type": "737-200",
+    "TO": "D-Check",
+    "needs": 1.0,
+    "length": 42.0,
+    "min": null
+  },
+  {
+    "company": "Utair",
+    "type": "737-200",
+    "TO": "C-Check",
+    "needs": 4.0,
+    "length": 26.0,
+    "min": null
+  },
+  {
+    "company": "Utair",
+    "type": "737-200",
+    "TO": "Painting",
+    "needs": 5.0,
+    "length": 8.0,
+    "min": null
+  },
+  {
+    "company": "Utair",
+    "type": "737-300",
+    "TO": "D-Check",
+    "needs": 1.0,
+    "length": 42.0,
+    "min": null
+  },
+  {
+    "company": "Utair",
+    "type": "737-300",
+    "TO": "Painting",
+    "needs": 1.0,
+    "length": 8.0,
+    "min": null
+  },
+  {
+    "company": "Utair",
+    "type": "An-24",
+    "TO": "C-Check",
+    "needs": 5.0,
+    "length": 32.0,
+    "min": null
+  },
+  {
+    "company": "Utair",
+    "type": "An-24",
+    "TO": "Painting",
+    "needs": 7.0,
+    "length": 8.0,
+    "min": null
+  }
+]

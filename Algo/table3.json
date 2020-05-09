@@ -1,0 +1,57 @@
+﻿[
+  {
+    "name": "IL-96-300",
+    "length": 55.345,
+    "width": 57.66
+  },
+  {
+    "name": "IL-96-400",
+    "length": 63.939,
+    "width": 60.105
+  },
+  {
+    "name": "Tu-154M",
+    "length": 47.9,
+    "width": 37.55
+  },
+  {
+    "name": "An-24",
+    "length": 23.53,
+    "width": 29.2
+  },
+  {
+    "name": "An-124",
+    "length": 69.1,
+    "width": 73.3
+  },
+  {
+    "name": "A319",
+    "length": 33.84,
+    "width": 34.1
+  },
+  {
+    "name": "A320",
+    "length": 37.57,
+    "width": 34.1
+  },
+  {
+    "name": "A321",
+    "length": 44.51,
+    "width": 34.1
+  },
+  {
+    "name": "737-200",
+    "length": 30.53,
+    "width": 28.35
+  },
+  {
+    "name": "737-300",
+    "length": 33.25,
+    "width": 28.88
+  },
+  {
+    "name": "737-800",
+    "length": 39.47,
+    "width": 34.32
+  }
+]

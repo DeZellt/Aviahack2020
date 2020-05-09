@@ -1,0 +1,50 @@
+﻿[
+  {
+    "company": "Pobeda",
+    "startTO": "31.8.2020",
+    "endTO": "31.10.2020",
+    "factor": "0.1"
+  },
+  {
+    "company": "Alrosa",
+    "startTO": "10.9.2020",
+    "endTO": "10.11.2020",
+    "factor": "0.3"
+  },
+  {
+    "company": "Ural Airlines",
+    "startTO": "15.9.2020",
+    "endTO": "15.11.2020",
+    "factor": "0.3"
+  },
+  {
+    "company": "Aeroflot",
+    "startTO": "15.8.2020",
+    "endTO": "30.11.2020",
+    "factor": "0.4"
+  },
+  {
+    "company": "S7",
+    "startTO": "1.9.2020",
+    "endTO": "30.11.2020",
+    "factor": "0.7"
+  },
+  {
+    "company": "Belavia",
+    "startTO": "1.10.2020",
+    "endTO": "30.11.2020",
+    "factor": "0.1"
+  },
+  {
+    "company": "Utair",
+    "startTO": "1.9.2020",
+    "endTO": "15.12.2020",
+    "factor": "0.2"
+  },
+  {
+    "company": "Russia",
+    "startTO": "1.10.2020",
+    "endTO": "15.12.2020",
+    "factor": "0.2"
+  }
+]

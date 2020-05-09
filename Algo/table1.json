@@ -1,0 +1,17 @@
+﻿[
+  {
+    "name": "DME",
+    "width": 300.0,
+    "depth": 80.0
+  },
+  {
+    "name": "SVO",
+    "width": 200.0,
+    "depth": 90.0
+  },
+  {
+    "name": "VKO",
+    "width": 150.0,
+    "depth": 70.0
+  }
+]
