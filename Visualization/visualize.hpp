@@ -13,7 +13,7 @@ public:
 
     sf::Color windowBGColor, angarOutlineColor, angarInsideColor;
     int curTheme;
-    enum {White, Dark};
+    enum {Light, Dark};
 };
 
 
@@ -24,21 +24,17 @@ namespace gProp{
     const static std::string fontPath("./Fonts/lucida.ttf");
 }
 
-
 //window properties
 namespace wProp{
     const static std::string windowName("Case: S7 Technics");
-    const int windowWidth = 640;
-    const int windowHeight = 480;
+    const int windowWidth = 1000;
+    const int windowHeight = 500;
     const int windowFPS = 1;
-
-    //const static sf::Color windowBGColor(sf::Color(49, 54, 55, 255));
 }
 
-
-//angars & planes colors
+//planes colors
 namespace pColor{
-    const static sf::Color S7(sf::Color(80,  158, 47, 255));
+    const static sf::Color S7(sf::Color(80, 158, 47, 255));
     const static sf::Color Aeroflot(sf::Color(81, 45, 109, 255));
     const static sf::Color UralAirlines(sf::Color(155, 34, 66, 255));
     const static sf::Color Pobeda(sf::Color(210, 38, 48, 255));
@@ -48,22 +44,29 @@ namespace pColor{
     const static sf::Color Belavia(sf::Color(240, 233, 145, 255));
 }
 
-
-//angar properties
+//angars properties
 namespace aProp{
-    const int minDistanceBetweenAngars = 2 * wProp::windowWidth / 100; // 2 % of window width
+    const int minDistanceBetweenAngars = 1 * wProp::windowWidth / 100; // 1 % of window width
     const int angarOutlineThickness = 2;
     const int angarTextPadding = 2;
+}
+
+//planes properties
+namespace pProp{
+    const int planeOutlineThickness = 2;
+    const int planeTextPadding = 1;
 }
 
 
 class Plane{
 public:
     Plane(){};
-    Plane(const std::string &newName, int newWidth, int newHeight, int newX, int newY);
+    Plane(const std::string &newName, const std::string &newCompanyName, 
+        int newWidth, int newHeight, int newX, int newY);
     Plane(const Plane &p);
 
     std::string name;
+    std::string companyName;
     int width, height;
     int x, y;
 };
@@ -80,9 +83,6 @@ public:
 };
 
 
-//отрисовка ангаров и самолетов в зависиости от текущего дня
-void drawAll(sf::RenderWindow &window, const std::vector<std::vector<Angar>> &timeGrid, timePoint t);
-
 //загрузка шрифта из файла
 bool loadFont(sf::Font &font, const std::string &fontPath);
 
@@ -90,5 +90,16 @@ bool loadFont(sf::Font &font, const std::string &fontPath);
 double calculateWidthCompressionRatio(const std::vector<std::vector<Angar>> &timeGrid, timePoint t);
 double calculateHeightCompressionRatio(const std::vector<std::vector<Angar>> &timeGrid, timePoint t);
 
-//вычисление размера шрифта для названия ангара
+//вычисление размера шрифта для названий ангара и самолёта 
 int calculateAngarFontSize(const sf::RectangleShape &rec, const Angar &a, int distanceToUpperBound);
+int calculatePlaneFontSize(const sf::RectangleShape &rec, const Plane &p, const std::string &str);
+
+//отрисовка ангаров и самолётов
+void drawAngarsAndPlanes(sf::RenderWindow &window, const std::vector<std::vector<Angar>> &timeGrid,
+    timePoint t, double widthCompressionRatio, double heightCompressionRatio);
+void drawPlanes(sf::RenderWindow &window, const std::vector<std::vector<Angar>> &timeGrid,
+    timePoint t, int i, double widthCompressionRatio, double heightCompressionRatio,
+    int angarX, int angarY);
+
+//определение цвета самолёта
+sf::Color determinePlaneColor(const std::string &planeCompanyName);
