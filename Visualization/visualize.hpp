@@ -17,12 +17,30 @@ public:
     enum {Light, Dark};
 };
 
+class Button{
+public:
+    Button(){};
+    Button(int x, int y, int width, int height, const std::string &s);
+    
+    void init(int x, int y, int width, int height, const std::string &s);
+
+    void switchMode();
+
+    bool isActive() const;
+
+    int x, y;
+    int width, height;
+    std::string title;
+    bool active;
+};
+
 
 //global properties
 namespace gProp{
     Theme theme;
     sf::Font font;
     Calendar calendar;
+    Button showCompaniesButton;
     const static std::string fontPath("./Fonts/courierNew.ttf");
 }
 
@@ -32,6 +50,8 @@ namespace wProp{
     const int windowWidth = 1000;
     const int windowHeight = 500;
     const int windowFPS = 15;
+
+    const int topBarSize = 38;
 }
 
 //planes colors
@@ -63,6 +83,13 @@ namespace pProp{
 namespace dProp{
     const int dateTextPadding = 10;
 }
+
+//button properies
+namespace bProp{
+    const int buttonOutlineThickness = 1;
+    const int buttonTextPadding = 3;
+}
+
 
 class Plane{
 public:
@@ -108,7 +135,13 @@ void drawPlanes(sf::RenderWindow &window, const std::vector<std::vector<Angar>> 
     timePoint t, int i, double widthCompressionRatio, double heightCompressionRatio,
     int angarX, int angarY);
 
+//отрисовка даты
 void drawDate(sf::RenderWindow &window, timePoint t);
+
+//отрисовка кнопки
+void drawButton(sf::RenderWindow &window, const Button &button);
+//попали ли внутрь кнопки
+bool clickInsideButton(sf::Vector2i &windowPos, Button &button, sf::Vector2i &click);
 
 //определение цвета самолёта
 sf::Color determinePlaneColor(const std::string &planeCompanyName);

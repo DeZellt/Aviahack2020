@@ -3,11 +3,13 @@
 #include <vector>
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
+#include <fstream>
 #include "visualize.hpp"
 #include "calendar.hpp"
+#include "json.hpp"
 
 //#define debugMode
-//#define musicPlay
+#define musicPlay
 
 Plane::Plane(const std::string &newName, const std::string &newCompanyName, 
         int newWidth, int newHeight, int newX, int newY){
@@ -33,6 +35,80 @@ Angar::Angar(const std::string &newName, int newWidth, int newHeight, const std:
     width = newWidth;
     height = newHeight;
     planes = newPlanes;
+}
+
+Button::Button(int x, int y, int width, int height, const std::string &s): x(x), 
+    y(y), width(width), height(height), title(s), active(false){};
+
+void Button::init(int x, int y, int width, int height, const std::string &s){
+    this->x = x;
+    this->y = y;
+    this->width = width;
+    this->height = height;
+    this->title = s;
+    active = false;
+}
+
+void Button::switchMode(){
+    active = !active;
+}
+
+bool Button::isActive() const{
+    return this->active;
+}
+
+Theme::Theme(){
+    curTheme = Theme::Light;
+}
+
+Theme::Theme(int theme){
+    Theme::applyTheme(theme);
+}
+
+void Theme::applyTheme(int theme){
+    switch(theme){
+        case Theme::Light:{
+            windowBGColor = sf::Color(253, 246, 227, 255);
+            angarOutlineColor = sf::Color::Black;
+            angarInsideColor = windowBGColor;
+            break;
+        }
+        case Theme::Dark:{
+            windowBGColor = sf::Color(49, 54, 55, 255);
+            angarOutlineColor = sf::Color::White;
+            angarInsideColor = windowBGColor;
+            break;
+        }
+        default:{
+            std::cerr << "Error in applying theme: incorrect theme\n";
+            break;
+        }
+    }
+    curTheme = theme;
+}
+
+bool clickInsideButton(sf::Vector2i &windowPos, Button &button, sf::Vector2i &click){
+    int clickX, clickY;
+    clickX = click.x;
+    clickY = click.y;
+
+    int winX, winY; 
+    winX = windowPos.x;
+    winY = windowPos.y;
+
+    int actualX = clickX - winX;
+    int actualY = clickY - winY - wProp::topBarSize;
+    //std::cout << "Click at: " << clickX << " " << clickY << std::endl;
+    //std::cout << "ActualX: " << actualX << " ActualY: " << actualY << std::endl;
+    //std::cout << "ButtonX: " << button.x << " ButtonY: " << button.y << std::endl; 
+    //std::cout << "BX + BW: " << button.x + button.width << " BY + BW: " << button.y + button.height << std::endl;
+
+    if(actualX >= button.x && actualX <= button.x + button.width &&
+        actualY >= button.y && actualY - wProp::topBarSize <= button.y + button.height){
+        return true;
+    }else{
+        return false;
+    }
 }
 
 bool loadFont(sf::Font &font, const std::string &fontPath){
@@ -87,48 +163,8 @@ int calculatePlaneFontSize(const sf::RectangleShape &rec, const Plane &plane, co
 
     int nameLength = str.length();
 
-    /*
-    #ifdef debugMode
-    std::cout << "calculatePlaneFontSize: " << str << " " << nameLength << " " << planeActualWidth << std::endl;
-    std::cout << (planeActualWidth / nameLength) << std::endl;
-    std::cout << ((planeActualHeight - pProp::planeTextPadding) / 2) << std::endl;
-    #endif
-    */
-
     return std::min(planeActualWidth / nameLength + 4, (planeActualHeight - 
         pProp::planeTextPadding) / 2);
-    
-    //return planeActualWidth / nameLength + 1;
-}
-
-Theme::Theme(){
-    curTheme = Theme::Light;
-}
-
-Theme::Theme(int theme){
-    Theme::applyTheme(theme);
-}
-
-void Theme::applyTheme(int theme){
-    switch(theme){
-        case Theme::Light:{
-            windowBGColor = sf::Color(253, 246, 227, 255);
-            angarOutlineColor = sf::Color::Black;
-            angarInsideColor = windowBGColor;
-            break;
-        }
-        case Theme::Dark:{
-            windowBGColor = sf::Color(49, 54, 55, 255);
-            angarOutlineColor = sf::Color::White;
-            angarInsideColor = windowBGColor;
-            break;
-        }
-        default:{
-            std::cerr << "Error in applying theme: incorrect theme\n";
-            break;
-        }
-    }
-    curTheme = theme;
 }
 
 void drawAngarsAndPlanes(sf::RenderWindow &window, const std::vector<std::vector<Angar>> &timeGrid,
@@ -179,8 +215,6 @@ void drawPlanes(sf::RenderWindow &window, const std::vector<std::vector<Angar>> 
         int newPlaneWidth = plane.width * widthCompressionRatio;
         int newPlaneHeight = plane.height * heightCompressionRatio;
 
-        //std::cout << newPlaneWidth << " " << newPlaneHeight << " " x << " " << y << std::endl; 
-
         int x = angarX + plane.x;
         int y = angarY + plane.y;
 
@@ -189,28 +223,24 @@ void drawPlanes(sf::RenderWindow &window, const std::vector<std::vector<Angar>> 
         planeRec.setPosition(x, y);
         planeRec.setFillColor(determinePlaneColor(plane.companyName));
         planeRec.setOutlineColor(gProp::theme.angarOutlineColor);
-        //planeRec.setFillColor(gProp::theme.windowBGColor);
-        //planeRec.setOutlineColor(determinePlaneColor(plane.companyName));
         
         planeRec.setOutlineThickness(pProp::planeOutlineThickness);
         
         window.draw(planeRec);
 
-        int textFontSize = std::min(calculatePlaneFontSize(planeRec, plane, plane.name),
-            calculatePlaneFontSize(planeRec, plane, plane.companyName));
-        //int textFontSize = calculatePlaneFontSize(planeRec, plane, plane.name);
-        
-        int textX = x + pProp::planeOutlineThickness + pProp::planeTextPadding;
-        //int middlePosition = (newPlaneWidth - plane.name.length() * textFontSize) / 2;
-        //textX += middlePosition > 0 ? middlePosition : -middlePosition;
-        int textY = y;
+        bool drawCompanies = gProp::showCompaniesButton.isActive();
 
-        #ifdef debugMode
-        std::cout << "----Plane: " << plane.name << " " << plane.companyName << std::endl;
-        std::cout << "newPlaneWidth: " << newPlaneWidth << std::endl;
-        std::cout << "textFontSize: " << textFontSize << std::endl;
-        std::cout << "text pixels: " << textFontSize * plane.name.length() << std::endl;
-        #endif
+        int textFontSize;
+
+        if(drawCompanies){
+            textFontSize = std::min(calculatePlaneFontSize(planeRec, plane, plane.name),
+                calculatePlaneFontSize(planeRec, plane, plane.companyName));
+        }else{
+            textFontSize = calculatePlaneFontSize(planeRec, plane, plane.name);
+        }
+
+        int textX = x + pProp::planeOutlineThickness + pProp::planeTextPadding;
+        int textY = y;
 
         text.setString(plane.name);
         text.setCharacterSize(textFontSize);
@@ -218,11 +248,14 @@ void drawPlanes(sf::RenderWindow &window, const std::vector<std::vector<Angar>> 
         text.setPosition(textX, textY);
         window.draw(text);
         
-        textY += textFontSize;
-        
-        text.setString(plane.companyName);
-        text.setPosition(textX, textY);
-        window.draw(text);
+
+        if(drawCompanies){
+            textY += textFontSize;
+            
+            text.setString(plane.companyName);
+            text.setPosition(textX, textY);
+            window.draw(text);
+        }
     }
 }
 
@@ -240,6 +273,32 @@ void drawDate(sf::RenderWindow &window, timePoint t){
     text.setPosition(x, y);
 
     window.draw(text);
+}
+
+void drawButton(sf::RenderWindow &window, const Button &button){
+    sf::RectangleShape buttonRec;
+    buttonRec.setPosition(button.x, button.y);
+    buttonRec.setSize(sf::Vector2f(button.width, button.height));
+    buttonRec.setOutlineThickness(bProp::buttonOutlineThickness);
+    buttonRec.setOutlineColor(gProp::theme.angarOutlineColor);
+
+    if(button.isActive()){
+        buttonRec.setFillColor(sf::Color::Green);
+    }else{
+        buttonRec.setFillColor(sf::Color::Red);
+    }
+
+    window.draw(buttonRec);
+
+    sf::Text t;
+    t.setFont(gProp::font);
+    t.setString(button.title);
+    t.setCharacterSize(20);
+    t.setFillColor(gProp::theme.angarOutlineColor);
+    t.setPosition(button.x + button.width - t.getCharacterSize() * t.getString().getSize() + 86,
+        button.y - t.getCharacterSize() - bProp::buttonOutlineThickness - bProp::buttonTextPadding);
+
+    window.draw(t);
 }
 
 sf::Color determinePlaneColor(const std::string &planeCompanyName){
@@ -265,44 +324,6 @@ sf::Color determinePlaneColor(const std::string &planeCompanyName){
     }
 }
 
-void drawTest(sf::RenderWindow &window){
-    sf::RectangleShape rec;
-
-    rec.setSize(sf::Vector2f(50, 200));
-
-    rec.setPosition(0,0);
-    rec.setFillColor(pColor::S7);
-    window.draw(rec);
-
-    rec.setPosition(50,0);
-    rec.setFillColor(pColor::Aeroflot);
-    window.draw(rec);
-    
-    rec.setPosition(100,0);
-    rec.setFillColor(pColor::UralAirlines);
-    window.draw(rec);
-    
-    rec.setPosition(150,0);
-    rec.setFillColor(pColor::Pobeda);
-    window.draw(rec);
-    
-    rec.setPosition(200,0);
-    rec.setFillColor(pColor::Alrosa);
-    window.draw(rec);
-    
-    rec.setPosition(250,0);
-    rec.setFillColor(pColor::Utair);
-    window.draw(rec);
-    
-    rec.setPosition(300,0);
-    rec.setFillColor(pColor::Rossiya);
-    window.draw(rec);
-    
-    rec.setPosition(350,0);
-    rec.setFillColor(pColor::Belavia);
-    window.draw(rec);
-}
-
 void drawAll(sf::RenderWindow &window, const std::vector<std::vector<Angar>> &timeGrid, timePoint t){
     try{
         timeGrid.at(t);
@@ -317,14 +338,9 @@ void drawAll(sf::RenderWindow &window, const std::vector<std::vector<Angar>> &ti
         return;
     }
 
-    //во сколько раз нужно всё сжать, если получилась слишком большая длина
+    //во сколько раз нужно всё сжать, если получилась слишком большая длина и ширина
     double widthCompressionRatio = calculateWidthCompressionRatio(timeGrid, t);
     double heightCompressionRatio = calculateHeightCompressionRatio(timeGrid, t);
-
-    #ifdef debugMode
-    std::cout << "widthCompressionRatio: " << widthCompressionRatio << std::endl;
-    std::cout << "heightCompressionRatio: " << heightCompressionRatio << std::endl;
-    #endif
 
     drawAngarsAndPlanes(window, timeGrid, t, widthCompressionRatio, heightCompressionRatio);
 }
@@ -337,39 +353,64 @@ int main(){
         return 1;
     }
 
-    gProp::calendar.init(31, 10, 2000);
-    std::cout << gProp::calendar.getDate(0) << std::endl;
+    gProp::calendar.init(15, 8, 2020);
+    gProp::showCompaniesButton.init(wProp::windowWidth-35, wProp::windowHeight-80 , 30, 30, 
+        "company name");
 
     gProp::theme.applyTheme(Theme::Light);
 
+    
     std::vector<std::vector<Angar>> angarTimeGrid;
 
-    Plane p1("Il-96-300", "S7", 23, 29, 3, 3);
-    Plane p2("An-24", "Aeroflot", 20, 40, 90, 3);
-    Plane p3("A319", "Ural", 20, 70, 170, 3);
-    Plane p4("737-800", "Pobeda", 70, 40, 15, 250);
-    Plane p5("737-200", "Alrosa", 23, 60, 3, 120);
-    Plane p6("Tu-154M", "Utair", 23, 52, 100, 120);
-    Plane p7("A321", "Rossiya", 23, 50, 120, 120);
-    Plane p8("A320", "Belavia", 23, 48, 190, 120);
+    std::ifstream is("output.json");
+    Json::Document doc = Json::Load(is);
+    is.close();
 
-    std::vector<Plane> pv;
-    pv.push_back(p1);
-    pv.push_back(p2);
-    pv.push_back(p3);
-    pv.push_back(p5);
-    pv.push_back(p6);
+    for(const Json::Node& node : doc.GetRoot().AsMap().at("positions").AsArray()){
+        std::vector<Angar> va;
+        std::vector<Plane> vp;
+        Angar svo, dme, vko;
 
-    Angar a("SVO", 80, 300, pv);
-    Angar b("VKO", 90, 200, pv);
-    Angar c("DME", 70, 150, pv);
+        svo.name = "svo";
+        svo.width = 90;
+        svo.height = 200;
+        dme.name = "dme";
+        dme.width = 80;
+        dme.height = 300;
+        vko.name = "vko";
+        vko.width = 70;
+        vko.height = 150;
+        
+        Plane plane;
 
-    std::vector<Angar> v;
-    v.push_back(a);
-    v.push_back(b);
-    v.push_back(c);
-    
-    angarTimeGrid.push_back(v);
+        for(const Json::Node& inner_node : node.AsArray()){
+            Json::Node cur_day = inner_node;
+            
+            plane.width = cur_day.AsMap().at("width").AsLong() / 1000;
+            plane.height = cur_day.AsMap().at("height").AsLong() / 1000;
+            plane.x = cur_day.AsMap().at("x").AsLong() / 1000;
+            plane.y = cur_day.AsMap().at("y").AsLong() / 1000;
+            plane.name = cur_day.AsMap().at("planeName").AsString();
+            plane.companyName = cur_day.AsMap().at("companyName").AsString();
+            std::string angar = cur_day.AsMap().at("hangarName").AsString();
+            
+            if(angar == "DME"){
+                dme.planes.push_back(plane);
+            }else if(angar == "VKO"){
+                vko.planes.push_back(plane);
+            }else if(angar == "SVO"){
+                svo.planes.push_back(plane);
+            }
+
+        }
+
+        va.push_back(svo);
+        va.push_back(dme);
+        va.push_back(vko);
+
+        angarTimeGrid.push_back(va);
+    }
+
 
     sf::RenderWindow window(sf::VideoMode(wProp::windowWidth, wProp::windowHeight), wProp::windowName);
     window.setFramerateLimit(wProp::windowFPS);
@@ -383,7 +424,6 @@ int main(){
     #endif
 
 
-    //sf::Mouse mouse;
     timePoint t = 0;
     while(window.isOpen()){
         sf::Event event;
@@ -392,9 +432,13 @@ int main(){
                 window.close();
             }
             if(sf::Mouse::isButtonPressed(sf::Mouse::Left)){
-                //sf::Vector2i mouseClick = sf::Mouse::getPosition();
-                //sf::Vector2i windowPos = window.getPosition();
-                //std::cout << "Left click at " << mouseClick.x - windowPos.x << " " << mouseClick.y - windowPos.y << std::endl;
+                sf::Vector2i mouseClick = sf::Mouse::getPosition(); 
+                sf::Vector2i windowPos = window.getPosition();
+                if(clickInsideButton(windowPos, gProp::showCompaniesButton, mouseClick)){
+                    gProp::showCompaniesButton.switchMode();
+                    //std::cout << "click on button" << std::endl;
+                }
+                
             }
             if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right)){
                 if(t < angarTimeGrid.size()-1){
@@ -406,15 +450,19 @@ int main(){
                     t--;
                 }
             }
+            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up)){
+                gProp::theme.applyTheme(Theme::Light);
+            }
+            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down)){
+                gProp::theme.applyTheme(Theme::Dark);
+            }
         }
 
         window.clear(gProp::theme.windowBGColor);
         drawAll(window, angarTimeGrid, t);
         drawDate(window, t);
-        //drawTest(window);
+        drawButton(window, gProp::showCompaniesButton);
         window.display();
-        //std::cout << window.getPosition().x  << " " << window.getPosition().y  << std::endl;
     }
-
     return 0;
 }
