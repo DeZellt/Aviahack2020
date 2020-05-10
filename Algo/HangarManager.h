@@ -142,8 +142,8 @@ public:
     bool add(const Plane& plane);
     void updatePlanes(int32_t timePoint);
     std::vector<PlanePosition> getPositions();
-    void Pack();
 
+    bool planePutLvl(Level& lvl, const Plane& pln);
 
     std::string name;
     int32_t width;
@@ -186,4 +186,11 @@ std::vector<Contract> CreateContracts(const Json::Node& node,
 
 std::vector<Json::Document> ReadTables();
 
-std::vector<std::vector<PlanePosition>> TheAlgorithm();
+struct AlgorithmResponse{
+    std::vector<std::vector<PlanePosition>> positions;
+    long long income;
+    long long fine;
+};
+
+
+AlgorithmResponse TheAlgorithm();

@@ -164,53 +164,53 @@ std::vector<PlanePosition> GetPositions(const std::map<std::string, Hangar>& han
 }
 
 
-Hangar::Hangar(std::string name, int width, int height)
-: name(name), width(width), height(height) {//width и height для уровней меняются местами
-    int cur_width = width;
-    while (cur_width > 80000) {
-        levels.push_back(Level(80000, height));
-        cur_width -= 80000;
+bool Hangar::planePutLvl(Level& lvl, const Plane& pln) {
+    if (lvl.canPutFloor(pln)) {
+        points.emplace(pln, lvl.putFloor(pln));
+        return true;
     }
-    if (cur_width != 0) {
-        levels.push_back(Level(cur_width, height));
-    }
-}
-
-void Hangar::Pack() {
-    points.clear();
-    for (const auto& plane : planes) {
-        for (auto& level : levels) {
-            if (level.canPutFloor(plane)) {
-                points[plane] = level.putFloor(plane);
-                break;
-            } else if (level.canPutCeil(plane)) {
-                points[plane] = level.putCeil(plane);
-                break;
-            }
-        }
-    }
-}
-
-void Hangar::updatePlanes(int32_t timePoint) {
-    planes = std::vector<Plane>(planes.begin(), std::remove_if(planes.begin(), planes.end(), [timePoint] (const Plane& plane) {
-        return plane.serviceTime > timePoint;
-    }));
-    Pack();
-}
-
-bool Hangar::add(const Plane &plane) {
-    for (auto& level : levels) {
-        if (level.canPutFloor(plane)) {
-            points[plane] = level.putFloor(plane);
-            return true;
-        } else if (level.canPutCeil(plane)) {
-            points[plane] = level.putCeil(plane);
-            return true;
-        }
+    if (lvl.canPutCeil(pln)) {
+        points.emplace(pln, lvl.putCeil(pln));
+        return true;
     }
     return false;
 }
 
+bool Hangar::add(const Plane& plane) {
+    std::vector<Plane> updatePlanes = planes;
+    updatePlanes.push_back(plane);
+    std::vector<Level> levels;
+
+    std::sort(updatePlanes.begin(), updatePlanes.end(), [](const Plane& l, const Plane& r) { return l.height < r.height; });
+    for (auto& pln : updatePlanes) {
+        if ((levels.empty() ? 0 : levels.back().beginHeight) + pln.height > height) // Мы не можем добавить самолет заранее
+            return false;
+
+        bool plnPut = false;
+        for (auto& lvl : levels) {
+            if (Hangar::planePutLvl(lvl, pln)) {
+                plnPut = true;
+                break;
+            }
+        }
+
+        if (plnPut) continue;
+
+        levels.emplace_back(levels.empty() ? 0 : levels.back().beginHeight + levels.back().getHeight(), width);
+        if (levels.back().beginHeight + pln.height > height
+            || !Hangar::planePutLvl(levels.back(), pln))
+            return false;
+    }
+    return true;
+}
+
+void Hangar::updatePlanes(int32_t timePoint) {
+    for (auto it = planes.begin(); it != planes.end(); ++it) {
+        --it->serviceTime;
+        if (it->serviceTime == 0)
+            planes.erase(it);
+    }
+}
 std::vector<PlanePosition> Hangar::getPositions() {
     std::vector<PlanePosition> result;
     for (auto& pair : points) {
@@ -224,10 +224,14 @@ std::vector<PlanePosition> Hangar::getPositions() {
 
 
 
+struct AlgorithmResponse{
+    std::vector<std::vector<PlanePosition>> positions;
+    long long income;
+    long long fine;
+};
 
 
-
-std::vector<std::vector<PlanePosition>> TheAlgorithm() {
+AlgorithmResponse TheAlgorithm() {
 
     std::vector<Json::Document> tables = ReadTables();
 
@@ -257,8 +261,9 @@ std::vector<std::vector<PlanePosition>> TheAlgorithm() {
 
 
 
-    long long summaryIncome = 0;
-    std::vector<std::vector<PlanePosition>> result;
+    AlgorithmResponse result;
+    result.income = 0;
+    result.fine = 0;
 
 
     for (long long i = min_time; i <= max_time; ++i) {
@@ -266,6 +271,9 @@ std::vector<std::vector<PlanePosition>> TheAlgorithm() {
             pair.second.updatePlanes(i);
         }
         for (auto& contract : contracts) {
+            if (contract.interval_start > i || contract.interval_end < i) {
+                continue;
+            }
             TOFormat format = contract.toFormat;
             std::string plane_name = contract.planeName;
 
@@ -279,17 +287,27 @@ std::vector<std::vector<PlanePosition>> TheAlgorithm() {
 
             for (const auto &pair : hang_name_and_price) {
                 Plane current_plane = planes[plane_name];
-                current_plane.serviceTime = contract.days;
+                current_plane.serviceTime = contract.days + i;
                 if (contract.planeAmount > 0 && hangars[pair.first].add(current_plane)) {
                     contract.planeAmount--;
-                    summaryIncome += prices[{format, plane_name}][pair.first];
+                    result.income += prices[{format, plane_name}][pair.first] * contract.days;
                 }
             }
         }
         std::vector<PlanePosition> temp_result;
         temp_result = GetPositions(hangars);
-        result.push_back(temp_result);
+        result.positions.push_back(temp_result);
     }
+
+    for (auto& contract : contracts) {
+        if (contract.planeAmount - contract.minPlaneAmount > 0) {
+            result.fine += companies[contract.companyName].penalty
+                    * contract.days
+                    * std::max_element(prices[{contract.toFormat, contract.planeName}].begin(),
+                                        prices[{contract.toFormat, contract.planeName}].end())->second;
+        }
+    }
+
 
     return result;
 }
