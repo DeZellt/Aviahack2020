@@ -1,6 +1,11 @@
 #include <fstream>
 #include "HangarManager.h"
 
+
+bool Plane::operator==(const Plane &other) const {
+    return name == other.name && width == other.width && height == other.height;
+}
+
 Date::Date(int day, int month, int year)
 : day(day), month(month), year(year) {}
 
@@ -84,25 +89,25 @@ std::map<std::pair<TOFormat, std::string>, std::unordered_map<std::string, int>>
 Plane ReadPlane(const Json::Node& node) {
     Plane result;
     result.name = node.AsMap().at("name").AsString();
-    result.width = node.AsMap().at("width").AsDouble();
-    result.height = node.AsMap().at("length").AsDouble();
+    result.width = node.AsMap().at("width").AsDouble() * 1000 + 1;
+    result.height = node.AsMap().at("length").AsDouble() * 1000 + 1;
     result.serviceTime = 0;
     return result;
 }
 
-std::vector<Plane> ReadPlanes(const Json::Node& node) {
-    std::vector<Plane> result;
+std::map<std::string, Plane> ReadPlanes(const Json::Node& node) {
+    std::map<std::string, Plane> result;
     for (const Json::Node& cur_plane : node.AsArray()) {
-        result.push_back(ReadPlane(cur_plane));
+        Plane plane = ReadPlane(cur_plane);
+        result[plane.name] = plane;
     }
     return result;
 }
 
 Hangar ReadHangar(const Json::Node& node) {
-    Hangar result;
-    result.name = node.AsMap().at("name").AsString();
-    result.width = node.AsMap().at("width").AsLong() * 1000;
-    result.height = node.AsMap().at("depth").AsLong() * 1000;
+    Hangar result( node.AsMap().at("name").AsString(),
+                 node.AsMap().at("width").AsLong() * 1000,
+                node.AsMap().at("depth").AsLong() * 1000);
     return result;
 }
 
@@ -118,7 +123,7 @@ std::map<std::string, Hangar> ReadHangars(const Json::Node& node) {
 std::vector<Contract> CreateContracts(const Json::Node& node,
         const std::map<std::string, Company>& companies,
         const std::map<std::pair<TOFormat, std::string>, std::unordered_map<std::string, int>>& prices,
-        const std::vector<Plane>& planes) {
+        const std::map<std::string, Plane>& planes) {
 
     std::vector<Contract> result;
     for (const Json::Node& cur_contract : node.AsArray()) {
@@ -148,15 +153,88 @@ std::vector<Json::Document> ReadTables() {
     return result;
 }
 
-HangarManager::HangarManager() {
+std::vector<PlanePosition> GetPositions(const std::map<std::string, Hangar>& hangars) {
+    std::vector<PlanePosition> result;
+    for (auto [name, hangar] : hangars) {
+        auto positions = hangar.getPositions();
+        result.insert(result.end(), positions.begin(), positions.end());
+    }
+
+    return result;
+}
+
+
+Hangar::Hangar(std::string name, int width, int height)
+: name(name), width(width), height(height) {//width и height для уровней меняются местами
+    int cur_width = width;
+    while (cur_width > 80000) {
+        levels.push_back(Level(80000, height));
+        cur_width -= 80000;
+    }
+    if (cur_width != 0) {
+        levels.push_back(Level(cur_width, height));
+    }
+}
+
+void Hangar::Pack() {
+    points.clear();
+    for (const auto& plane : planes) {
+        for (auto& level : levels) {
+            if (level.canPutFloor(plane)) {
+                points[plane] = level.putFloor(plane);
+                break;
+            } else if (level.canPutCeil(plane)) {
+                points[plane] = level.putCeil(plane);
+                break;
+            }
+        }
+    }
+}
+
+void Hangar::updatePlanes(int32_t timePoint) {
+    planes = std::vector<Plane>(planes.begin(), std::remove_if(planes.begin(), planes.end(), [timePoint] (const Plane& plane) {
+        return plane.serviceTime > timePoint;
+    }));
+    Pack();
+}
+
+bool Hangar::add(const Plane &plane) {
+    for (auto& level : levels) {
+        if (level.canPutFloor(plane)) {
+            points[plane] = level.putFloor(plane);
+            return true;
+        } else if (level.canPutCeil(plane)) {
+            points[plane] = level.putCeil(plane);
+            return true;
+        }
+    }
+    return false;
+}
+
+std::vector<PlanePosition> Hangar::getPositions() {
+    std::vector<PlanePosition> result;
+    for (auto& pair : points) {
+        result.push_back(PlanePosition{.width = pair.first.width, .height = pair.first.height,
+                                       .x = pair.second.x, .y = pair.second.y, .planeName = pair.first.name,
+                                       .companyName = "", .hangarName = name});
+    }
+    return result;
+}
+
+
+
+
+
+
+
+std::vector<std::vector<PlanePosition>> TheAlgorithm() {
 
     std::vector<Json::Document> tables = ReadTables();
-
 
     std::map<std::string, Hangar> hangars = ReadHangars(tables[0].GetRoot());
     std::map<std::string, Company> companies = ReadCompanies(tables[1].GetRoot());
     std::map<std::pair<TOFormat, std::string>, std::unordered_map<std::string, int>> prices = ReadPrices(tables[3].GetRoot()); // {TO, Plane} -> {{Hangar1, Price1}, ... {HangarN, PriceN}}
-    std::vector<Plane> planes = ReadPlanes(tables[2].GetRoot());
+    std::map<std::string, Plane> planes = ReadPlanes(tables[2].GetRoot());
     std::vector<Contract> contracts = CreateContracts(tables[4].GetRoot(), companies, prices, planes);
 
 
@@ -178,22 +256,40 @@ HangarManager::HangarManager() {
     })->second.end.AsTimeStamp();
 
 
+
+    long long summaryIncome = 0;
     std::vector<std::vector<PlanePosition>> result;
 
-    int contractCounter = 0;
+
     for (long long i = min_time; i <= max_time; ++i) {
-        TOFormat format = contracts[contractCounter].toFormat;
-        std::string plane_name = contracts[contractCounter].planeName;
-        std::vector<std::pair<std::string, int>> hang_name_and_price;
-        for (const auto& pair : prices.at({format, plane_name})) {
-            hang_name_and_price.push_back(pair);
+        for (auto& pair : hangars) {
+            pair.second.updatePlanes(i);
         }
-        std::sort(hang_name_and_price.begin(), hang_name_and_price.end(), [] (const auto& lhs, const auto& rhs) {
-            return lhs.second < rhs.second;
-        });
-        for (const auto& pair : hang_name_and_price) {
-            if ()
+        for (auto& contract : contracts) {
+            TOFormat format = contract.toFormat;
+            std::string plane_name = contract.planeName;
+
+            std::vector<std::pair<std::string, int>> hang_name_and_price;
+            for (const auto &pair : prices.at({format, plane_name})) {
+                hang_name_and_price.push_back(pair);
+            }
+            std::sort(hang_name_and_price.begin(), hang_name_and_price.end(), [](const auto &lhs, const auto &rhs) {
+                return lhs.second < rhs.second;
+            });
+
+            for (const auto &pair : hang_name_and_price) {
+                Plane current_plane = planes[plane_name];
+                current_plane.serviceTime = contract.days;
+                if (contract.planeAmount > 0 && hangars[pair.first].add(current_plane)) {
+                    contract.planeAmount--;
+                    summaryIncome += prices[{format, plane_name}][pair.first];
+                }
+            }
         }
+        std::vector<PlanePosition> temp_result;
+        temp_result = GetPositions(hangars);
+        result.push_back(temp_result);
     }
 
+    return result;
 }

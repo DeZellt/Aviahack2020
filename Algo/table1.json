@@ -1,9 +1,8 @@
-﻿[
-  {
-    "name": "DME",
-    "width": 300.0,
-    "depth": 80.0
-  },
+[{
+  "name": "DME",
+  "width": 300.0,
+  "depth": 80.0
+},
   {
     "name": "SVO",
     "width": 200.0,

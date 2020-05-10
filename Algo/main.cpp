@@ -4,11 +4,7 @@
 #include "HangarManager.h"
 
 int main() {
-    setlocale(LC_ALL, "Russian");
-
-    std::ifstream file("table.json");
-    Json::Document doc = Json::Load(file);
-    Json::Print(doc, std::cout);
+    std::vector<std::vector<PlanePosition>> positions = TheAlgorithm();
 
     return 0;
 }

@@ -10,7 +10,7 @@
 #include <iostream>
 #include <vector>
 
-#include <Point.h>
+#include "Point.h"
 
 class Date {
 public:
@@ -29,7 +29,7 @@ private:
     int year;
 };
 
-class PlanePosition {
+struct PlanePosition {
     long long width;
     long long height;
     long long x;
@@ -42,10 +42,14 @@ class PlanePosition {
 class Plane {
 public:
     std::string name;
-    double width;
-    double height;
+    int width;
+    int height;
     int32_t serviceTime;
+
+    bool operator == (const Plane& other) const;
 };
+
+
 
 enum TOFormat {
     D_CHECK,
@@ -133,13 +137,21 @@ struct Level {
 
 class Hangar {
 public:
+    Hangar() = default;
+    Hangar(std::string name, int width, int height);
     bool add(const Plane& plane);
     void updatePlanes(int32_t timePoint);
-private:
+    std::vector<PlanePosition> getPositions();
+    void Pack();
+
+
     std::string name;
     int32_t width;
     int32_t height;
     std::vector<Plane> planes;
+    std::vector<Level> levels;
+
+private:
 
     class PlaneHashFunc {
     public:
@@ -151,8 +163,6 @@ private:
 
     std::unordered_map<Plane, TPoint, PlaneHashFunc> points;
 
-    bool planePutLvl(Level&, const Plane&);
-
 };
 
 
@@ -160,8 +170,9 @@ private:
 Company ReadCompany(const Json::Node&);
 std::map<std::string, Company> ReadCompanies(const Json::Node&);
 
-std::vector<Plane> ReadPlanes(const Json::Node& node);
+
 Plane ReadPlane(const Json::Node& node);
+std::map<std::string, Plane> ReadPlanes(const Json::Node& node);
 
 Company ReadCompany(const Json::Node& node);
 std::map<std::string, Company> ReadCompanies(const Json::Node& node);
@@ -175,8 +186,4 @@ std::vector<Contract> CreateContracts(const Json::Node& node,
 
 std::vector<Json::Document> ReadTables();
 
-class HangarManager {
-public:
-    HangarManager();
-
-};
+std::vector<std::vector<PlanePosition>> TheAlgorithm();

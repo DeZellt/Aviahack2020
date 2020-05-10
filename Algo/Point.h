@@ -1,5 +1,5 @@
-#ifndef AVIASHIT_POINT_H
-#define AVIASHIT_POINT_H
+#ifndef AVIAHACK_POINT_H
+#define AVIAHACK_POINT_H
 
 struct TPoint {
     int32_t x;
@@ -9,4 +9,4 @@ struct TPoint {
     TPoint(int32_t x, int32_t y): x(x), y(y) {}
 };
 
-#endif //AVIASHIT_POINT_H
+#endif //AVIAHACK_POINT_H
