@@ -45,6 +45,7 @@ public:
     int width;
     int height;
     int32_t serviceTime;
+    int id;
 
     bool operator == (const Plane& other) const;
 };
@@ -149,7 +150,7 @@ public:
     int32_t width;
     int32_t height;
     std::vector<Plane> planes;
-    std::vector<Level> levels;
+
 
 private:
 
@@ -160,6 +161,7 @@ private:
                    std::hash<int32_t >()(plane.height + plane.width);
         }
     };
+
 
     std::unordered_map<Plane, TPoint, PlaneHashFunc> points;
 
@@ -190,6 +192,7 @@ struct AlgorithmResponse{
     std::vector<std::vector<PlanePosition>> positions;
     long long income;
     long long fine;
+    long long start_time;
 };
 
 

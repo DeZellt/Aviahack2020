@@ -3,7 +3,7 @@
 
 
 bool Plane::operator==(const Plane &other) const {
-    return name == other.name && width == other.width && height == other.height;
+    return name == other.name && width == other.width && height == other.height && id == other.id;
 }
 
 Date::Date(int day, int month, int year)
@@ -164,6 +164,9 @@ std::vector<PlanePosition> GetPositions(const std::map<std::string, Hangar>& han
 }
 
 
+Hangar::Hangar(std::string name, int width, int height)
+: name(name), width(width), height(height) {}
+
 bool Hangar::planePutLvl(Level& lvl, const Plane& pln) {
     if (lvl.canPutFloor(pln)) {
         points.emplace(pln, lvl.putFloor(pln));
@@ -201,16 +204,19 @@ bool Hangar::add(const Plane& plane) {
             || !Hangar::planePutLvl(levels.back(), pln))
             return false;
     }
+    planes = updatePlanes;
     return true;
 }
 
 void Hangar::updatePlanes(int32_t timePoint) {
     for (auto it = planes.begin(); it != planes.end(); ++it) {
         --it->serviceTime;
-        if (it->serviceTime == 0)
-            planes.erase(it);
     }
+    planes = std::vector<Plane>(planes.begin(), std::remove_if(planes.begin(), planes.end(), [] (const Plane& p) {
+        return p.serviceTime == 0;
+    }));
 }
+
 std::vector<PlanePosition> Hangar::getPositions() {
     std::vector<PlanePosition> result;
     for (auto& pair : points) {
@@ -221,14 +227,6 @@ std::vector<PlanePosition> Hangar::getPositions() {
     return result;
 }
 
-
-
-
-struct AlgorithmResponse{
-    std::vector<std::vector<PlanePosition>> positions;
-    long long income;
-    long long fine;
-};
 
 
 AlgorithmResponse TheAlgorithm() {
@@ -262,6 +260,7 @@ AlgorithmResponse TheAlgorithm() {
 
 
     AlgorithmResponse result;
+    result.start_time = min_time;
     result.income = 0;
     result.fine = 0;
 
@@ -287,9 +286,11 @@ AlgorithmResponse TheAlgorithm() {
 
             for (const auto &pair : hang_name_and_price) {
                 Plane current_plane = planes[plane_name];
-                current_plane.serviceTime = contract.days + i;
-                if (contract.planeAmount > 0 && hangars[pair.first].add(current_plane)) {
+                current_plane.serviceTime = contract.days;
+                current_plane.id = contract.planeAmount;
+                while (contract.planeAmount > 0 && hangars[pair.first].add(current_plane)) {
                     contract.planeAmount--;
+                    current_plane.id--;
                     result.income += prices[{format, plane_name}][pair.first] * contract.days;
                 }
             }
