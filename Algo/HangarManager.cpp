@@ -40,9 +40,9 @@ Date Date::ParseDate(std::string date) {
     std::string cur_part;
     Date result;
     getline(ss, cur_part, '.');
-    result.month = std::stoll(cur_part);
-    getline(ss, cur_part, '.');
     result.day = std::stoll(cur_part);
+    getline(ss, cur_part, '.');
+    result.month = std::stoll(cur_part);
     getline(ss, cur_part);
     result.year = std::stoll(cur_part);
     return result;
